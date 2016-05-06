@@ -18,10 +18,9 @@
  * Strings for component 'tool_pluginkenobi', language 'en'.
  *
  * @package    tool_pluginkenobi
- * @copyright  2015 Alexandru Elisei
+ * @copyright  2016 Alexandru Elisei
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-$string['generalinfo'] = 'General plugin information';
 $string['pluginname'] = 'Plugin generator';
 $string['mod'] = 'Activity modules';
 $string['tool'] = 'Admin tools';
@@ -34,3 +33,9 @@ $string['setrelease'] = 'Plugin release version';
 $string['setwebinterface'] = 'Generate web interface';
 $string['setcliscripts'] = 'Generate command line scripts';
 $string['next'] = 'Next';
+$string['recipefile'] = 'Recipe file';
+$string['recipeheader'] = 'Generate plugin from recipe';
+$string['recipehdr'] = 'Generate plugin from recipe';
+$string['manualhdr'] = 'Generate plugin from input';
+$string['loadrecipe'] = 'Load recipe';
+$string['skiptogeneration'] = 'Skip to generate plugin';

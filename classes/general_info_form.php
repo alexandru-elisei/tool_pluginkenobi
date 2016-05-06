@@ -30,7 +30,7 @@ require_once($CFG->libdir . '/formslib.php');
  * General information form.
  *
  * @package    tool_pluginkenobi
- * @copyright  1717 Alexandru Elisei
+ * @copyright  2016 Alexandru Elisei
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class tool_pluginkenobi_general_info_form extends moodleform {
@@ -41,7 +41,15 @@ class tool_pluginkenobi_general_info_form extends moodleform {
     public function definition () {
         $mform = $this->_form;
 
-        $mform->addElement('header', 'generalhdr', get_string('generalinfo', 'tool_pluginkenobi'));
+        $mform->addElement('header', 'recipehdr', get_string('recipehdr', 'tool_pluginkenobi'));
+        $mform->setExpanded('recipehdr', true);
+        $mform->addElement('filepicker', 'recipefile', get_string('recipefile', 'tool_pluginkenobi'),
+                           null, array('maxbytes' => 50000, 'accepted_types' => '*'));
+        $mform->addElement('submit', 'loadrecipe', get_string('loadrecipe', 'tool_pluginkenobi'));
+
+        $mform->addElement('header', 'manualhdr', get_string('manualhdr', 'tool_pluginkenobi'));
+        $mform->setExpanded('manualhdr', true);
+        $mform->closeHeaderBefore('manualhdr');
 
         $plugintypes = array(
             'mod'   => get_string('mod', 'tool_pluginkenobi'),
@@ -79,6 +87,11 @@ class tool_pluginkenobi_general_info_form extends moodleform {
         $mform->addElement('advcheckbox', 'setcliscripts',
                            get_string('setcliscripts', 'tool_pluginkenobi'), '', null, array(0, 1));
 
-        $this->add_action_buttons(false, get_string('next', 'tool_pluginkenobi'));
+        $buttonarr = array();
+        $buttonarr[] =& $mform->createElement('submit', 'next', get_string('next', 'tool_pluginkenobi'));
+        $buttonarr[] =& $mform->createElement('submit', 'skiptogeneration', get_string('skiptogeneration', 'tool_pluginkenobi'));
+        $mform->disabledIf('skiptogeneration', 'setwebinterface', 'eq', '0');
+        $mform->addGroup($buttonarr, 'buttonarr', '', array(' '), false);
+        $mform->closeHeaderBefore('buttonarr');
     }
 }
