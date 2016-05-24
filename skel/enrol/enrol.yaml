@@ -1,0 +1,13 @@
+templates:
+    enrol
+
+# No value for an option means using the default values.
+options:
+    enrol:
+        require_user_interaction:
+        use_expire_time:
+        use_standard_editing_ui:
+        allow_enrol:
+        allow_unenrol:
+        allow_unenrol_user:
+        allow_manage:
