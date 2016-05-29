@@ -39,14 +39,12 @@ class tool_pluginkenobi_yaml_reader {
     /**
      * Process and return the yaml file.
      *
-     * The filename is relative to the pluginkenobi directory and doesn't
-     * include the '.yaml' extension.
+     * The filename is absolute and must include the '.yaml' extension.
      *
      * @throws moodle_exception.
      * @param string $filename The yaml file.
      */
     public static function load($filename) {
-        $filename = '../' . $filename . '.yaml';
         try {
             $data = Spyc::YAMLLoad($filename);
         } catch (Exception $e) {

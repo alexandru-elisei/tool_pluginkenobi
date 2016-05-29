@@ -61,17 +61,22 @@ class tool_pluginkenobi_example_generator {
     /** @var string[] Optional options for the generation of the plugin. */
     protected $optionaloptions = array('release', 'maturity', 'dependencies');
 
-    /** @var string The location of the generated plugin relative to the Moodle directory. */
-    protected $plugindirectory = '/admin/tool/';
+    /** @var string The default location of the generated plugin relative to the Moodle directory. */
+    protected $defaultplugindirectory = '/admin/tool/';
 
     /** @var string The directory where the templates reside. */
     protected $templatedirectory = 'skel/example/';
 
     /** @var string[] The templates used for generating the plugin. */
-    protected $templatefiles = array('example');
+    protected $templatefiles = array(
+        'example' => 'example.php'
+    );
 
     /** @var bool Is the settings feature enabled? */
     protected $usesettings = false;
+
+    /** @var string Directory where the plugin files will be generated. */
+    protected $targetdir;
 
     /**
      * Class constructor.
@@ -79,8 +84,10 @@ class tool_pluginkenobi_example_generator {
      * @throws moodle_exception.
      * @param string[] $options Generator options.
      */
-    public function __construct($options) {
-        // Adding the boilerplate variabiles.
+    public function __construct($options, $targetdir) {
+        global $CFG;
+
+        // Adding the boilerplate variables.
         foreach (tool_pluginkenobi_processor::$boilerplateoptions as $option) {
             $this->options[$option] = $options[$option];
         }
@@ -109,25 +116,36 @@ class tool_pluginkenobi_example_generator {
 
         if (isset($options['features']) && is_array($options['features']) && in_array('settings', $options['features'])) {
             $this->usesettings = true;
-            $this->templatefiles[] = 'settings';
+            $this->templatefiles['settings'] = 'settings.php';
+        }
+
+        if (empty($targetdir)) {
+            $this->targetdir = $CFG->dirroot . $this->defaultplugindirectory . $this->options['name'] . '/';
+        } else {
+            $this->targetdir = $targetdir . $this->options['name'] . '/';
         }
     }
 
     public function generate() {
         global $CFG;
 
+        $result = mkdir($this->targetdir, 0755, true);
+        if ($result === false) {
+            throw new moodle_exception('Cannot create directory "' . $this->targetdir . '"');
+        }
+
         $templatedirectory = $CFG->dirroot . '/admin/tool/pluginkenobi/' . $this->templatedirectory;
-        foreach ($this->templatefiles as $file) {
-            print("Template for $file: \n\n");
-            $result = tool_pluginkenobi_template_processor::generate($file, $templatedirectory, $this->options);
-            print($result);
-            print("\n");
+        foreach ($this->templatefiles as $templatename => $outputfile) {
+            $contents = tool_pluginkenobi_template_processor::generate($templatename, $templatedirectory, $this->options);
+            $outputfile = $this->targetdir . $outputfile;
+            $handle = fopen($outputfile, 'w');
+            fputs($handle, $contents);
+            fclose($handle);
         }
     }
 
     public function get_target_directory() {
-        $targetdirectory = $this->plugindirectory . $this->options['name'] . '/';
-        return $targetdirectory;
+        return $this->targetdir;
     }
 
     /**

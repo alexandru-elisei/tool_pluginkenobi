@@ -41,14 +41,16 @@ class tool_pluginkenobi_lang_generator {
     /** @var string[] Required options for the generation of the plugin. */
     protected $requiredoptions = array('short_description');
 
-    /** @var string The location of the generated plugin relative to the Moodle directory. */
-    protected $targetdirectory;
+    /** @var string The location of the generated plugin.
+    protected $targetdir;
 
     /** @var string The directory where the templates reside. */
     protected $templatedirectory = 'skel/';
 
     /** @var string[] The templates used for generating the plugin. */
-    protected $templatefiles = array('lang');
+    protected $templatefiles = array(
+        'lang' => ''
+    );
 
     /**
      * Class constructor.
@@ -57,8 +59,10 @@ class tool_pluginkenobi_lang_generator {
      * @param string[] $options Generator options.
      * @param string $targetdirectory The directory where the file will be saved.
      */
-    public function __construct($options, $targetdirectory = null) {
-        $this->targetdirectory = $targetdirectory;
+    public function __construct($options, $targetdir = null) {
+        // TODO: Add support for more locale.
+        $this->targetdir = $targetdir . 'lang/en/';
+
         // Adding the boilerplate variabiles.
         foreach (tool_pluginkenobi_processor::$boilerplateoptions as $option) {
             $this->options[$option] = $options[$option];
@@ -75,17 +79,26 @@ class tool_pluginkenobi_lang_generator {
             }
             $this->options[$option] = $value;
         }
+        $this->templatefiles['lang'] = $options['component'] . '.php';
     }
 
     public function generate() {
         global $CFG;
 
+        if (!file_exists($this->targetdir)) {
+            $result = mkdir($this->targetdir, 0755, true);
+            if ($result === false) {
+                throw new moodle_exception('Cannot create directory "' . $this->targetdir . '"');
+            }
+        }
+
         $templatedirectory = $CFG->dirroot . '/admin/tool/pluginkenobi/' . $this->templatedirectory;
-        foreach ($this->templatefiles as $file) {
-            print("Template for $file: \n\n");
-            $result = tool_pluginkenobi_template_processor::generate($file, $templatedirectory, $this->options);
-            print($result);
-            print("\n");
+        foreach ($this->templatefiles as $templatename => $outputfile) {
+            $contents = tool_pluginkenobi_template_processor::generate($templatename, $templatedirectory, $this->options);
+            $outputfile = $this->targetdir . $outputfile;
+            $handle = fopen($outputfile, 'w');
+            fputs($handle, $contents);
+            fclose($handle);
         }
     }
 

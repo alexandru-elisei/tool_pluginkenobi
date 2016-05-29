@@ -52,16 +52,19 @@ class tool_pluginkenobi_processor {
     /** @var string[] Templates required for every plugin. */
     protected $requiredtemplates = array('lang');
 
+    /** @var string Target directory for the creation of the plugin files. */
+    protected $targetdir = null;
+
     /**
      * Class constructor.
      *
      * @param string $plugintype The type of plugin.
      * @param string[] $options The options for the plugin.
-     * @param string $recipename Recipe file name.
+     * @param string $recipe Recipe file name.
      */
-    public function __construct($plugintype, $options, $recipename = null) {
+    public function __construct($plugintype, $options, $recipe = null, $targetdir = null) {
         if (empty($plugintype)) {
-            $this->options = tool_pluginkenobi_yaml_reader::load($recipename);
+            $this->options = tool_pluginkenobi_yaml_reader::load($recipe);
 
             if (empty($this->options['plugintype'])) {
                 throw new moodle_exception('Plugin type not specified in the recipe file');
@@ -72,6 +75,7 @@ class tool_pluginkenobi_processor {
             if (empty($this->options['name'])) {
                 throw new moodle_exception('Plugin name not specified in the recipe file');
             }
+            $this->targetdir = $targetdir;
         } else {
             $this->plugintype = $plugintype;
             $this->options = $options;
@@ -102,7 +106,7 @@ class tool_pluginkenobi_processor {
 
         require_once(__DIR__ . '/' . $this->plugintype . '_generator.php');
         $generatorname = 'tool_pluginkenobi_' . $this->plugintype . '_generator';
-        $generator = new $generatorname($this->options);
+        $generator = new $generatorname($this->options, $this->targetdir);
         $generator->generate();
         $targetdirectory = $generator->get_target_directory();
 
