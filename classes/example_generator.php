@@ -24,6 +24,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+require_once(__DIR__ . '/generator_base.php');
 require_once(__DIR__ . '/template_processor.php');
 require_once(__DIR__ . '/processor.php');
 
@@ -34,7 +35,7 @@ require_once(__DIR__ . '/processor.php');
  * @copyright  2016 Alexandru Elisei
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class tool_pluginkenobi_example_generator {
+class tool_pluginkenobi_example_generator extends tool_pluginkenobi_generator_base {
     /** @var string[] Options for the generation of the plugin. */
     protected $options = array();
 
@@ -64,12 +65,9 @@ class tool_pluginkenobi_example_generator {
     /** @var string The default location of the generated plugin relative to the Moodle directory. */
     protected $defaultplugindirectory = '/admin/tool/';
 
-    /** @var string The directory where the templates reside. */
-    protected $templatedirectory = 'skel/example/';
-
     /** @var string[] The templates used for generating the plugin. */
-    protected $templatefiles = array(
-        'example' => 'example.php'
+    protected $pluginfiles = array(
+        'skel/example/example' => 'example.php'
     );
 
     /** @var bool Is the settings feature enabled? */
@@ -116,7 +114,7 @@ class tool_pluginkenobi_example_generator {
 
         if (isset($options['features']) && is_array($options['features']) && in_array('settings', $options['features'])) {
             $this->usesettings = true;
-            $this->templatefiles['settings'] = 'settings.php';
+            $this->pluginfiles['skel/example/settings'] = 'settings.php';
         }
 
         if (empty($targetdir)) {
@@ -124,28 +122,6 @@ class tool_pluginkenobi_example_generator {
         } else {
             $this->targetdir = $targetdir . $this->options['name'] . '/';
         }
-    }
-
-    public function generate() {
-        global $CFG;
-
-        $result = mkdir($this->targetdir, 0755, true);
-        if ($result === false) {
-            throw new moodle_exception('Cannot create directory "' . $this->targetdir . '"');
-        }
-
-        $templatedirectory = $CFG->dirroot . '/admin/tool/pluginkenobi/' . $this->templatedirectory;
-        foreach ($this->templatefiles as $templatename => $outputfile) {
-            $contents = tool_pluginkenobi_template_processor::generate($templatename, $templatedirectory, $this->options);
-            $outputfile = $this->targetdir . $outputfile;
-            $handle = fopen($outputfile, 'w');
-            fputs($handle, $contents);
-            fclose($handle);
-        }
-    }
-
-    public function get_target_directory() {
-        return $this->targetdir;
     }
 
     /**
@@ -168,6 +144,10 @@ class tool_pluginkenobi_example_generator {
             }
         }
 
-        return strval($value);
+        if (empty($value)) {
+            return null;
+        } else {
+            return $value;
+        }
     }
 }

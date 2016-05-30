@@ -24,6 +24,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+require_once(__DIR__ . '/generator_base.php');
 require_once(__DIR__ . '/template_processor.php');
 require_once(__DIR__ . '/processor.php');
 
@@ -34,7 +35,7 @@ require_once(__DIR__ . '/processor.php');
  * @copyright  2016 Alexandru Elisei
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class tool_pluginkenobi_lang_generator {
+class tool_pluginkenobi_lang_generator extends tool_pluginkenobi_generator_base {
     /** @var string[] Options for the generation of the plugin. */
     protected $options = array();
 
@@ -44,12 +45,9 @@ class tool_pluginkenobi_lang_generator {
     /** @var string The location of the generated plugin.
     protected $targetdir;
 
-    /** @var string The directory where the templates reside. */
-    protected $templatedirectory = 'skel/';
-
     /** @var string[] The templates used for generating the plugin. */
-    protected $templatefiles = array(
-        'lang' => ''
+    protected $pluginfiles = array(
+        'skel/lang' => ''
     );
 
     /**
@@ -59,7 +57,7 @@ class tool_pluginkenobi_lang_generator {
      * @param string[] $options Generator options.
      * @param string $targetdirectory The directory where the file will be saved.
      */
-    public function __construct($options, $targetdir = null) {
+    public function __construct($options, $targetdir) {
         // TODO: Add support for more locale.
         $this->targetdir = $targetdir . 'lang/en/';
 
@@ -79,36 +77,6 @@ class tool_pluginkenobi_lang_generator {
             }
             $this->options[$option] = $value;
         }
-        $this->templatefiles['lang'] = $options['component'] . '.php';
-    }
-
-    public function generate() {
-        global $CFG;
-
-        if (!file_exists($this->targetdir)) {
-            $result = mkdir($this->targetdir, 0755, true);
-            if ($result === false) {
-                throw new moodle_exception('Cannot create directory "' . $this->targetdir . '"');
-            }
-        }
-
-        $templatedirectory = $CFG->dirroot . '/admin/tool/pluginkenobi/' . $this->templatedirectory;
-        foreach ($this->templatefiles as $templatename => $outputfile) {
-            $contents = tool_pluginkenobi_template_processor::generate($templatename, $templatedirectory, $this->options);
-            $outputfile = $this->targetdir . $outputfile;
-            $handle = fopen($outputfile, 'w');
-            fputs($handle, $contents);
-            fclose($handle);
-        }
-    }
-
-    /**
-     * Checks if a given option is valid.
-     *
-     * @param string $option The option to be validated.
-     * @return string | null The validated option value or null if it's not a valid value.
-     */
-    protected function validate_option($option, $value) {
-        return strval($value);
+        $this->pluginfiles['skel/lang'] = $options['component'] . '.php';
     }
 }

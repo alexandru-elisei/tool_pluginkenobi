@@ -43,11 +43,13 @@ class tool_pluginkenobi_template_processor {
      * @throws moodle_exception.
      * @param string $template The template file name.
      */
-    public static function generate($templatefile, $templatedirectory, $options) {
-        $templatefile = $templatefile . '.mustache';
+    public static function generate($templatepath, $options) {
+        $templatefile = basename($templatepath) . '.mustache';
+        $templatedir = dirname($templatepath);
+
         Mustache_Autoloader::register();
         $mustache = new Mustache_Engine(array(
-            'loader' => new Mustache_Loader_FilesystemLoader($templatedirectory)
+            'loader' => new Mustache_Loader_FilesystemLoader($templatedir)
         ));
 
         $tpl = $mustache->loadTemplate($templatefile);
