@@ -25,7 +25,6 @@
 defined('MOODLE_INTERNAL') || die();
 
 require_once(__DIR__ . '/template_processor.php');
-require_once(__DIR__ . '/processor.php');
 
 /**
  * Generator_base class.
@@ -64,7 +63,7 @@ abstract class tool_pluginkenobi_generator_base {
         foreach ($this->pluginfiles as $template => $outputfile) {
             $templatepath = $CFG->dirroot . '/admin/tool/pluginkenobi/' . $template;
             $contents = tool_pluginkenobi_template_processor::generate($templatepath, $this->options);
-            
+
             $outputfilepath = $this->targetdir . $outputfile;
             if (file_exists($outputfilepath)) {
                 throw new moodle_exception('File "' . $outputfilepath . '" already exists');

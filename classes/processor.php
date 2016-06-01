@@ -25,6 +25,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->libdir . '/moodlelib.php');
+require_once($CFG->libdir . '/classes/component.php');
 require_once(__DIR__ . '/yaml_reader.php');
 
 /**
@@ -38,7 +39,7 @@ class tool_pluginkenobi_processor {
     /**
      * Options for the boilerplate.
      */
-    static public $boilerplateoptions = array('name', 'year', 'author', 'email', 'component');
+    static public $boilerplateoptions = array('year', 'author', 'email', 'component');
 
     /** @var string $plugintype The type of the plugin. */
     protected $plugintype = null;
@@ -62,23 +63,37 @@ class tool_pluginkenobi_processor {
      * @param string[] $options The options for the plugin.
      * @param string $recipe Recipe file name.
      */
-    public function __construct($plugintype, $options, $recipe = null, $targetdir = null) {
-        if (empty($plugintype)) {
+    public function __construct($options, $recipe = null, $targetdir = null) {
+        if (!is_null($recipe)) {
             $this->options = tool_pluginkenobi_yaml_reader::load($recipe);
 
-            if (empty($this->options['plugintype'])) {
-                throw new moodle_exception('Plugin type not specified in the recipe file');
+            // Extracting author name and email.
+            if (empty($this->options['author']) || !is_array($this->options['author'])) {
+                throw new moodle_exception('Author not specified in the recipe file');
             }
-            $this->plugintype = core_text::strtolower($this->options['plugintype']);
-            unset($this->options['plugintype']);
 
-            if (empty($this->options['name'])) {
-                throw new moodle_exception('Plugin name not specified in the recipe file');
+            $author = null;
+            foreach ($this->options['author'] as $entry) {
+                if (!empty($entry['name'])) {
+                    $author = $entry['name'];
+                } else if (!empty($entry['email'])) {
+                    $this->options['email'] = $entry['email'];
+                }
             }
-            $this->targetdir = $targetdir;
+            $this->options['author'] = $author;
         } else {
-            $this->plugintype = $plugintype;
             $this->options = $options;
+        }
+
+        if (empty($this->options['component'])) {
+            throw new moodle_exception('Plugin component not specified in the recipe file');
+        }
+
+        $plugin = null;
+        list($this->plugintype, $plugin) = core_component::normalize_component($this->options['component']);
+
+        if (empty($plugin)) {
+            throw new moodle_exception('Invalid plugin component name');
         }
 
         if (!in_array($this->plugintype, $this->supportedplugintypes)) {
@@ -87,15 +102,13 @@ class tool_pluginkenobi_processor {
 
         // Every template requires the 'year' variable for the boilerplate.
         $this->options['year'] = userdate(time(), '%Y');
-
-        // Every template requires the 'component' variable for the boilerplate.
-        $this->options['component'] = $this->plugintype . '_' . $this->options['name'];
-
         foreach (self::$boilerplateoptions as $option) {
             if (empty($this->options[$option])) {
                 throw new moodle_exception('Option "' . $option . '" required for the boilerplate missing');
             }
         }
+
+        $this->targetdir = $targetdir;
     }
 
     /**
@@ -108,13 +121,14 @@ class tool_pluginkenobi_processor {
         $generatorname = 'tool_pluginkenobi_' . $this->plugintype . '_generator';
         $generator = new $generatorname($this->options, $this->targetdir);
         $generator->generate();
-        $targetdirectory = $generator->get_target_directory();
+        // Update the target directory, the generator might use the default plugin location. */
+        $this->targetdir = $generator->get_target_directory();
 
         // Generating the required files.
-        foreach ($this->requiredtemplates as $name) {
-            require_once(__DIR__ . '/' . $name . '_generator.php');
-            $generatorname = 'tool_pluginkenobi_' . $name . '_generator';
-            $generator = new $generatorname($this->options, $targetdirectory);
+        foreach ($this->requiredtemplates as $template) {
+            require_once(__DIR__ . '/' . $template . '_generator.php');
+            $generatorname = 'tool_pluginkenobi_' . $template . '_generator';
+            $generator = new $generatorname($this->options, $this->targetdir);
             $generator->generate();
         }
     }

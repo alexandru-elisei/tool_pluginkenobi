@@ -47,7 +47,7 @@ Options:
 -t, --targetdir            Target directory
 
 Example:
-\$php generate.php --recipe=example_recipe.yaml --target=~/example
+\$php generate.php --recipe=example_recipe.yaml --targetdir=~/example
 
 ";
 
@@ -110,7 +110,7 @@ if (empty($options['recipe'])) {
     unset($options['plugintype']);
     $processor = new tool_pluginkenobi_processor($plugintype, $options, null, $targetdir);
 } else {
-    $processor = new tool_pluginkenobi_processor('', array(), $recipelocation, $targetdir);
+    $processor = new tool_pluginkenobi_processor(array(), $recipelocation, $targetdir);
 }
 
 $processor->generate();

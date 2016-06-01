@@ -40,7 +40,7 @@ class tool_pluginkenobi_lang_generator extends tool_pluginkenobi_generator_base 
     protected $options = array();
 
     /** @var string[] Required options for the generation of the plugin. */
-    protected $requiredoptions = array('short_description');
+    protected $requiredoptions = array('name');
 
     /** @var string The location of the generated plugin.
     protected $targetdir;

@@ -24,6 +24,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+require_once($CFG->libdir . '/classes/component.php');
 require_once(__DIR__ . '/generator_base.php');
 require_once(__DIR__ . '/template_processor.php');
 require_once(__DIR__ . '/processor.php');
@@ -112,19 +113,27 @@ class tool_pluginkenobi_example_generator extends tool_pluginkenobi_generator_ba
             }
         }
 
-        if (isset($options['features']) && is_array($options['features']) && in_array('settings', $options['features'])) {
-            $this->usesettings = true;
-            $this->pluginfiles['skel/example/settings'] = 'settings.php';
+        if (isset($options['features']) && is_array($options['features'])) {
+            foreach ($options['features'] as $entry) {
+                if (!empty($entry['settings'])) {
+                    if ($entry['settings'] === true) {
+                        $this->usesettings = true;
+                        $this->pluginfiles['skel/example/settings'] = 'settings.php';
+                    }
+                    break;
+                }
+            }
         }
 
+        list($notused, $plugin) = core_component::normalize_component($this->options['component']);
         if (empty($targetdir)) {
-            $this->targetdir = $CFG->dirroot . $this->defaultplugindirectory . $this->options['name'] . '/';
+            $this->targetdir = $CFG->dirroot . $this->defaultplugindirectory . $plugin . '/';
         } else {
-            $this->targetdir = $targetdir . $this->options['name'] . '/';
+            $this->targetdir = $targetdir . $plugin . '/';
         }
     }
 
-    /**
+/**
      * Checks if a given option is valid.
      *
      * @param string $option The option to be validated.
