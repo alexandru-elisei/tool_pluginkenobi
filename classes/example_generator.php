@@ -71,8 +71,10 @@ class tool_pluginkenobi_example_generator extends tool_pluginkenobi_generator_ba
         'skel/example/example' => 'example.php'
     );
 
-    /** @var bool Is the settings feature enabled? */
-    protected $usesettings = false;
+    /** @var $string[] List of files for the optional features. */
+    protected $featurefiles = array(
+        'settings' => array('skel/example/settings' => 'settings.php'),
+    );
 
     /** @var string Directory where the plugin files will be generated. */
     protected $targetdir;
@@ -113,19 +115,37 @@ class tool_pluginkenobi_example_generator extends tool_pluginkenobi_generator_ba
             }
         }
 
+        $requestedfeatures = array();
         if (isset($options['features']) && is_array($options['features'])) {
             foreach ($options['features'] as $entry) {
-                if (!empty($entry['settings'])) {
-                    if ($entry['settings'] === true) {
-                        $this->usesettings = true;
-                        $this->pluginfiles['skel/example/settings'] = 'settings.php';
+                $value = reset($entry);
+                $option = key($entry);
+                $requestedfeatures[$option] = $value;
+            }
+        }
+
+        // Adding the files for the features requested by the user.
+        if (!empty($requestedfeatures)) {
+            if (!empty($requestedfeatures['all'])) {
+                if ($requestedfeatures['all'] === true) {
+                    foreach ($this->featurefiles as $pluginfiles) {
+                        foreach ($pluginfiles as $template => $outputfile) {
+                            $this->pluginfiles[$template] = $outputfile;
+                        }
                     }
-                    break;
+                }
+            } else {
+                foreach ($this->featurefiles as $option => $pluginfiles) {
+                    if (!empty($requestedfeatures[$option]) && $requestedfeatures[$option] === true) {
+                        foreach ($pluginfiles as $template => $outputfile) {
+                            $this->pluginfiles[$template] = $outputfile;
+                        }
+                    }
                 }
             }
         }
 
-        list($notused, $plugin) = core_component::normalize_component($this->options['component']);
+        list($unused, $plugin) = core_component::normalize_component($this->options['component']);
         if (empty($targetdir)) {
             $this->targetdir = $CFG->dirroot . $this->defaultplugindirectory . $plugin . '/';
         } else {

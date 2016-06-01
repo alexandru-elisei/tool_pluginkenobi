@@ -68,7 +68,7 @@ abstract class tool_pluginkenobi_generator_base {
             if (file_exists($outputfilepath)) {
                 throw new moodle_exception('File "' . $outputfilepath . '" already exists');
             } else {
-                $dirpath = basename($outputfilepath);
+                $dirpath = dirname($outputfilepath);
                 // Creating the directory hierarchy if it doesn't exist.
                 if (!file_exists($dirpath)) {
                     $result = mkdir($dirpath, 0755, true);

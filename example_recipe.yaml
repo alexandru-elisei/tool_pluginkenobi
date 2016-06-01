@@ -8,4 +8,4 @@ version: 2016052700
 requires: "2.9"
 maturity: MATURITY_ALPHA
 features:
-    - settings: true
+    - all: true
