@@ -39,7 +39,7 @@ class tool_pluginkenobi_processor {
     /**
      * Options for the boilerplate.
      */
-    static public $boilerplateoptions = array('year', 'author', 'email', 'component');
+    static public $boilerplateoptions = array('year', 'component');
 
     /** @var string $plugintype The type of the plugin. */
     protected $plugintype = null;
@@ -72,15 +72,21 @@ class tool_pluginkenobi_processor {
                 throw new moodle_exception('Author not specified in the recipe file');
             }
 
-            $author = null;
             foreach ($this->options['author'] as $entry) {
                 if (!empty($entry['name'])) {
-                    $author = $entry['name'];
+                    $this->options['author']['name'] = $entry['name'];
                 } else if (!empty($entry['email'])) {
-                    $this->options['email'] = $entry['email'];
+                    $this->options['author']['email'] = $entry['email'];
                 }
             }
-            $this->options['author'] = $author;
+
+            if (empty($this->options['author']['name'])) {
+                throw new moodle_exception('Author name not specified in the recipe file');
+            }
+
+            if (empty($this->options['author']['email'])) {
+                throw new moodle_exception('Author email not specified in the recipe file');
+            }
         } else {
             $this->options = $options;
         }

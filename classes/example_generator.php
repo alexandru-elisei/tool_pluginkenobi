@@ -88,6 +88,9 @@ class tool_pluginkenobi_example_generator extends tool_pluginkenobi_generator_ba
     public function __construct($options, $targetdir) {
         global $CFG;
 
+        $this->options['author']['name'] = $options['author']['name'];
+        $this->options['author']['email'] = $options['author']['email'];
+
         // Adding the boilerplate variables.
         foreach (tool_pluginkenobi_processor::$boilerplateoptions as $option) {
             $this->options[$option] = $options[$option];
