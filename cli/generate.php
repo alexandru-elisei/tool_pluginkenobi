@@ -61,7 +61,7 @@ if ($options['help']) {
     die();
 }
 
-// Right now 'recipe' is a required argument, this will change.
+// 'recipe' is a required argument.
 if (empty($options['recipe'])) {
     echo("\nRecipe not specified!\n");
     echo $help;
@@ -105,12 +105,5 @@ if (!empty($options['targetdir'])) {
     $targetdir = null;
 }
 
-if (empty($options['recipe'])) {
-    $plugintype = $options['plugintype'];
-    unset($options['plugintype']);
-    $processor = new tool_pluginkenobi_processor($plugintype, $options, null, $targetdir);
-} else {
-    $processor = new tool_pluginkenobi_processor(array(), $recipelocation, $targetdir);
-}
-
+$processor = new tool_pluginkenobi_processor(array(), $recipelocation, $targetdir);
 $processor->generate();
