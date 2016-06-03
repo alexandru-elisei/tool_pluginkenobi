@@ -118,19 +118,9 @@ class tool_pluginkenobi_example_generator extends tool_pluginkenobi_generator_ba
             }
         }
 
-        $requestedfeatures = array();
-        if (isset($options['features']) && is_array($options['features'])) {
-            foreach ($options['features'] as $entry) {
-                $value = reset($entry);
-                $option = key($entry);
-                $requestedfeatures[$option] = $value;
-            }
-        }
-
-        // Adding the files for the features requested by the user.
-        if (!empty($requestedfeatures)) {
-            if (!empty($requestedfeatures['all'])) {
-                if ($requestedfeatures['all'] === true) {
+        if (!empty($options['features'])) {
+            if (!empty($options['features']['all'])) {
+                if ($options['features']['all'] === true) {
                     foreach ($this->featurefiles as $pluginfiles) {
                         foreach ($pluginfiles as $template => $outputfile) {
                             $this->pluginfiles[$template] = $outputfile;
@@ -139,7 +129,7 @@ class tool_pluginkenobi_example_generator extends tool_pluginkenobi_generator_ba
                 }
             } else {
                 foreach ($this->featurefiles as $option => $pluginfiles) {
-                    if (!empty($requestedfeatures[$option]) && $requestedfeatures[$option] === true) {
+                    if (!empty($options['features'][$option]) && $options['features'][$option] === true) {
                         foreach ($pluginfiles as $template => $outputfile) {
                             $this->pluginfiles[$template] = $outputfile;
                         }

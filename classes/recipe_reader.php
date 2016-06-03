@@ -15,29 +15,28 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * File containing the yaml_reader class
+ * File containing the recipe_reader class
  *
  * @package    tool_pluginkenobi
  * @copyright  2016 Alexandru Elisei
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-//defined('MOODLE_INTERNAL') || die();
-//define('CLI_SCRIPT', true);
+defined('MOODLE_INTERNAL') || die();
 
 require_once(__DIR__ . '/../Spyc/Spyc.php');
 require_once(__DIR__ . '/../../../../config.php');
 
 /**
- * Yaml_reader class.
+ * Recipe_reader class.
  *
  * @package    tool_pluginkenobi
  * @copyright  2016 Alexandru Elisei
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class tool_pluginkenobi_yaml_reader {
+class tool_pluginkenobi_recipe_reader {
     /**
-     * Process and return the yaml file.
+     * Process and return the recipe file.
      *
      * The filename is absolute and must include the '.yaml' extension.
      *
@@ -50,6 +49,28 @@ class tool_pluginkenobi_yaml_reader {
         } catch (Exception $e) {
             throw new moodle_exception('Error loading file "' . $filename . '": ' . $e->getMessage());
         }
+
+        // Extracting author name and email.
+        if (!empty($data['author']) && is_array($data['author'])) {
+            foreach ($data['author'] as $entry) {
+                if (!empty($entry['name'])) {
+                    $data['author']['name'] = $entry['name'];
+                } else if (!empty($entry['email'])) {
+                    $data['author']['email'] = $entry['email'];
+                }
+            }
+        }
+
+        // Extracting requested features.
+        $requestedfeatures = array();
+        if (!empty($data['features']) && is_array($data['features'])) {
+            foreach ($data['features'] as $entry) {
+                $value = reset($entry);
+                $option = key($entry);
+                $requestedfeatures[$option] = $value;
+            }
+        }
+        $data['features'] = $requestedfeatures;
 
         return $data;
     }

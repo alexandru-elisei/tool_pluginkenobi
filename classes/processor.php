@@ -26,7 +26,7 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->libdir . '/moodlelib.php');
 require_once($CFG->libdir . '/classes/component.php');
-require_once(__DIR__ . '/yaml_reader.php');
+require_once(__DIR__ . '/recipe_reader.php');
 
 /**
  * Processor class.
@@ -65,9 +65,9 @@ class tool_pluginkenobi_processor {
      */
     public function __construct($options, $recipe = null, $targetdir = null) {
         if (!is_null($recipe)) {
-            $this->options = tool_pluginkenobi_yaml_reader::load($recipe);
+            $this->options = tool_pluginkenobi_recipe_reader::load($recipe);
 
-            // Extracting author name and email.
+            /*
             if (empty($this->options['author']) || !is_array($this->options['author'])) {
                 throw new moodle_exception('Author not specified in the recipe file');
             }
@@ -87,6 +87,7 @@ class tool_pluginkenobi_processor {
             if (empty($this->options['author']['email'])) {
                 throw new moodle_exception('Author email not specified in the recipe file');
             }
+             */
         } else {
             $this->options = $options;
         }
@@ -104,6 +105,18 @@ class tool_pluginkenobi_processor {
 
         if (!in_array($this->plugintype, $this->supportedplugintypes)) {
            throw new moodle_exception('Unsupported plugin type "' . $this->plugintype . '"');
+        }
+
+        if (empty($this->options['author']) || !is_array($this->options['author'])) {
+            throw new moodle_exception('Author not specified in the recipe file');
+        }
+
+        if (empty($this->options['author']['name'])) {
+            throw new moodle_exception('Author name not specified in the recipe file');
+        }
+
+        if (empty($this->options['author']['email'])) {
+            throw new moodle_exception('Author email not specified in the recipe file');
         }
 
         // Every template requires the 'year' variable for the boilerplate.
