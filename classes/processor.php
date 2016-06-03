@@ -63,34 +63,9 @@ class tool_pluginkenobi_processor {
      * @param string[] $options The options for the plugin.
      * @param string $recipe Recipe file name.
      */
-    public function __construct($options, $recipe = null, $targetdir = null) {
-        if (!is_null($recipe)) {
-            $this->options = tool_pluginkenobi_recipe_reader::load($recipe);
-
-            /*
-            if (empty($this->options['author']) || !is_array($this->options['author'])) {
-                throw new moodle_exception('Author not specified in the recipe file');
-            }
-
-            foreach ($this->options['author'] as $entry) {
-                if (!empty($entry['name'])) {
-                    $this->options['author']['name'] = $entry['name'];
-                } else if (!empty($entry['email'])) {
-                    $this->options['author']['email'] = $entry['email'];
-                }
-            }
-
-            if (empty($this->options['author']['name'])) {
-                throw new moodle_exception('Author name not specified in the recipe file');
-            }
-
-            if (empty($this->options['author']['email'])) {
-                throw new moodle_exception('Author email not specified in the recipe file');
-            }
-             */
-        } else {
-            $this->options = $options;
-        }
+    public function __construct($options, $targetdir = null) {
+        $this->options = $options;
+        $this->targetdir = $targetdir;
 
         if (empty($this->options['component'])) {
             throw new moodle_exception('Plugin component not specified in the recipe file');
@@ -121,13 +96,12 @@ class tool_pluginkenobi_processor {
 
         // Every template requires the 'year' variable for the boilerplate.
         $this->options['year'] = userdate(time(), '%Y');
+
         foreach (self::$boilerplateoptions as $option) {
             if (empty($this->options[$option])) {
                 throw new moodle_exception('Option "' . $option . '" required for the boilerplate missing');
             }
         }
-
-        $this->targetdir = $targetdir;
     }
 
     /**

@@ -27,6 +27,7 @@ define('CLI_SCRIPT', true);
 require(__DIR__ . '/../../../../config.php');
 require_once($CFG->libdir . '/clilib.php');
 require_once(__DIR__ . '/../classes/processor.php');
+require_once(__DIR__ . '/../classes/recipe_reader.php');
 
 // Now get cli options.
 list($options, $unrecognized) = cli_get_params(array(
@@ -105,5 +106,6 @@ if (!empty($options['targetdir'])) {
     $targetdir = null;
 }
 
-$processor = new tool_pluginkenobi_processor(array(), $recipelocation, $targetdir);
+$options = tool_pluginkenobi_recipe_reader::load($recipelocation);
+$processor = new tool_pluginkenobi_processor($options, $targetdir);
 $processor->generate();
