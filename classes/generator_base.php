@@ -62,7 +62,7 @@ abstract class tool_pluginkenobi_generator_base {
 
         foreach ($this->pluginfiles as $template => $outputfile) {
             $templatepath = $CFG->dirroot . '/admin/tool/pluginkenobi/' . $template;
-            $contents = tool_pluginkenobi_template_processor::generate($templatepath, $this->recipe);
+            $contents = tool_pluginkenobi_template_processor::load($templatepath, $this->recipe);
 
             $outputfilepath = $this->targetdir . $outputfile;
             if (file_exists($outputfilepath)) {

@@ -43,7 +43,7 @@ class tool_pluginkenobi_template_processor {
      * @throws moodle_exception.
      * @param string $template The template file name.
      */
-    public static function generate($templatepath, $options) {
+    public static function load($templatepath, $options) {
         $templatefile = basename($templatepath) . '.mustache';
         $templatedir = dirname($templatepath);
 

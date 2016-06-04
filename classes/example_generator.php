@@ -26,7 +26,6 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->libdir . '/classes/component.php');
 require_once(__DIR__ . '/generator_base.php');
-require_once(__DIR__ . '/template_processor.php');
 require_once(__DIR__ . '/processor.php');
 
 /**
