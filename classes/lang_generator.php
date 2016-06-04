@@ -36,8 +36,8 @@ require_once(__DIR__ . '/processor.php');
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class tool_pluginkenobi_lang_generator extends tool_pluginkenobi_generator_base {
-    /** @var string[] Options for the generation of the plugin. */
-    protected $options = array();
+    /** @var string[] Recipe for generating of the plugin. */
+    protected $recipe = array();
 
     /** @var string[] Required options for the generation of the plugin. */
     protected $requiredoptions = array('name');
@@ -54,29 +54,32 @@ class tool_pluginkenobi_lang_generator extends tool_pluginkenobi_generator_base 
      * Class constructor.
      *
      * @throws moodle_exception.
-     * @param string[] $options Generator options.
+     * @param string[] $recipe The recipe for generating the plugin.
      * @param string $targetdirectory The directory where the file will be saved.
      */
-    public function __construct($options, $targetdir) {
+    public function __construct($recipe, $targetdir) {
         // TODO: Add support for more locale.
         $this->targetdir = $targetdir . 'lang/en/';
 
+        $this->recipe['author']['name'] = $recipe['author']['name'];
+        $this->recipe['author']['email'] = $recipe['author']['email'];
+
         // Adding the boilerplate variabiles.
         foreach (tool_pluginkenobi_processor::$boilerplateoptions as $option) {
-            $this->options[$option] = $options[$option];
+            $this->recipe[$option] = $recipe[$option];
         }
 
         foreach ($this->requiredoptions as $option) {
-            if (empty($options[$option])) {
+            if (empty($recipe[$option])) {
                 throw new moodle_exception('Required option "' . $option . '" missing');
             }
 
-            $value = $this->validate_option($option, $options[$option]);
+            $value = $this->validate_option($option, $recipe[$option]);
             if (is_null($value)) {
-                throw new moodle_exception('Invalid value "' . $options[$option] . '" for option "' . $option . '"');
+                throw new moodle_exception('Invalid value "' . $recipe[$option] . '" for option "' . $option . '"');
             }
-            $this->options[$option] = $value;
+            $this->recipe[$option] = $value;
         }
-        $this->pluginfiles['skel/lang'] = $options['component'] . '.php';
+        $this->pluginfiles['skel/lang'] = $recipe['component'] . '.php';
     }
 }

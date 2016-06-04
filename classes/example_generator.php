@@ -37,8 +37,8 @@ require_once(__DIR__ . '/processor.php');
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class tool_pluginkenobi_example_generator extends tool_pluginkenobi_generator_base {
-    /** @var string[] Options for the generation of the plugin. */
-    protected $options = array();
+    /** @var string[] Recipe for generating the plugin. */
+    protected $recipe = array();
 
     /** @var string[] Moodle versions. */
     protected $moodleversions = array(
@@ -83,44 +83,45 @@ class tool_pluginkenobi_example_generator extends tool_pluginkenobi_generator_ba
      * Class constructor.
      *
      * @throws moodle_exception.
-     * @param string[] $options Generator options.
+     * @param string[] $recipe Plugin recipe.
+     * @param string $targetdir The target directory.
      */
-    public function __construct($options, $targetdir) {
+    public function __construct($recipe, $targetdir) {
         global $CFG;
 
-        $this->options['author']['name'] = $options['author']['name'];
-        $this->options['author']['email'] = $options['author']['email'];
+        $this->recipe['author']['name'] = $recipe['author']['name'];
+        $this->recipe['author']['email'] = $recipe['author']['email'];
 
         // Adding the boilerplate variables.
         foreach (tool_pluginkenobi_processor::$boilerplateoptions as $option) {
-            $this->options[$option] = $options[$option];
+            $this->recipe[$option] = $recipe[$option];
         }
 
         foreach ($this->requiredoptions as $option) {
-            if (empty($options[$option])) {
+            if (empty($recipe[$option])) {
                 throw new moodle_exception('Required option "' . $option . '" missing');
             }
 
-            $value = $this->validate_option($option, $options[$option]);
+            $value = $this->validate_option($option, $recipe[$option]);
             if (is_null($value)) {
-                throw new moodle_exception('Invalid value "' . $options[$option] . '" for option "' . $option . '"');
+                throw new moodle_exception('Invalid value "' . $recipe[$option] . '" for option "' . $option . '"');
             }
-            $this->options[$option] = $value;
+            $this->recipe[$option] = $value;
         }
 
         foreach ($this->optionaloptions as $option) {
-            if (!empty($options[$option])) {
-                $value = $this->validate_option($option, $options[$option]);
+            if (!empty($recipe[$option])) {
+                $value = $this->validate_option($option, $recipe[$option]);
                 if (is_null($value)) {
-                    throw new moodle_exception('Invalid value "' . $options[$option] . '" for option "' . $option . '"');
+                    throw new moodle_exception('Invalid value "' . $recipe[$option] . '" for option "' . $option . '"');
                 }
-                $this->options[$option] = $value;
+                $this->recipe[$option] = $value;
             }
         }
 
-        if (!empty($options['features'])) {
-            if (!empty($options['features']['all'])) {
-                if ($options['features']['all'] === true) {
+        if (!empty($recipe['features'])) {
+            if (!empty($recipe['features']['all'])) {
+                if ($recipe['features']['all'] === true) {
                     foreach ($this->featurefiles as $pluginfiles) {
                         foreach ($pluginfiles as $template => $outputfile) {
                             $this->pluginfiles[$template] = $outputfile;
@@ -129,7 +130,7 @@ class tool_pluginkenobi_example_generator extends tool_pluginkenobi_generator_ba
                 }
             } else {
                 foreach ($this->featurefiles as $option => $pluginfiles) {
-                    if (!empty($options['features'][$option]) && $options['features'][$option] === true) {
+                    if (!empty($recipe['features'][$option]) && $recipe['features'][$option] === true) {
                         foreach ($pluginfiles as $template => $outputfile) {
                             $this->pluginfiles[$template] = $outputfile;
                         }
@@ -138,7 +139,7 @@ class tool_pluginkenobi_example_generator extends tool_pluginkenobi_generator_ba
             }
         }
 
-        list($unused, $plugin) = core_component::normalize_component($this->options['component']);
+        list($unused, $plugin) = core_component::normalize_component($this->recipe['component']);
         if (empty($targetdir)) {
             $this->targetdir = $CFG->dirroot . $this->defaultplugindirectory . $plugin . '/';
         } else {

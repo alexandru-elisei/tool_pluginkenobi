@@ -40,17 +40,17 @@ abstract class tool_pluginkenobi_generator_base {
     /** @var string Directory where the plugin files will be generated. */
     protected $targetdir;
 
-    /** @var string[] Options for the generation of the plugin. */
-    protected $options = array();
+    /** @var string[] Recipe for generating the plugin. */
+    protected $recipe = array();
 
     /**
      * Class constructor.
      *
      * @throws moodle_exception.
-     * @param string[] $options Generator options.
+     * @param string[] $recipe Recipe for plugin generation.
      * @param string $targetdir Target directory.
      */
-    abstract public function __construct($options, $targetdir);
+    abstract public function __construct($recipe, $targetdir);
 
     public function generate() {
         global $CFG;
@@ -62,7 +62,7 @@ abstract class tool_pluginkenobi_generator_base {
 
         foreach ($this->pluginfiles as $template => $outputfile) {
             $templatepath = $CFG->dirroot . '/admin/tool/pluginkenobi/' . $template;
-            $contents = tool_pluginkenobi_template_processor::generate($templatepath, $this->options);
+            $contents = tool_pluginkenobi_template_processor::generate($templatepath, $this->recipe);
 
             $outputfilepath = $this->targetdir . $outputfile;
             if (file_exists($outputfilepath)) {

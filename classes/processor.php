@@ -44,8 +44,8 @@ class tool_pluginkenobi_processor {
     /** @var string $plugintype The type of the plugin. */
     protected $plugintype = null;
 
-    /** @var string[] $pluginoptions The options for the generation of the plugin. */
-    protected $options = array();
+    /** @var string[] $recipe The recipe for the generation of the plugin. */
+    protected $recipe = array();
 
     /** @var string[] $supportedplugintypes The supported plugin types. */
     protected $supportedplugintypes = array('example');
@@ -60,19 +60,19 @@ class tool_pluginkenobi_processor {
      * Class constructor.
      *
      * @param string $plugintype The type of plugin.
-     * @param string[] $options The options for the plugin.
+     * @param string[] $recipe The recipe for the plugin.
      * @param string $recipe Recipe file name.
      */
-    public function __construct($options, $targetdir = null) {
-        $this->options = $options;
+    public function __construct($recipe, $targetdir = null) {
+        $this->recipe = $recipe;
         $this->targetdir = $targetdir;
 
-        if (empty($this->options['component'])) {
+        if (empty($this->recipe['component'])) {
             throw new moodle_exception('Plugin component not specified in the recipe file');
         }
 
         $plugin = null;
-        list($this->plugintype, $plugin) = core_component::normalize_component($this->options['component']);
+        list($this->plugintype, $plugin) = core_component::normalize_component($this->recipe['component']);
 
         if (empty($plugin)) {
             throw new moodle_exception('Invalid plugin component name');
@@ -82,23 +82,23 @@ class tool_pluginkenobi_processor {
            throw new moodle_exception('Unsupported plugin type "' . $this->plugintype . '"');
         }
 
-        if (empty($this->options['author']) || !is_array($this->options['author'])) {
+        if (empty($this->recipe['author']) || !is_array($this->recipe['author'])) {
             throw new moodle_exception('Author not specified in the recipe file');
         }
 
-        if (empty($this->options['author']['name'])) {
+        if (empty($this->recipe['author']['name'])) {
             throw new moodle_exception('Author name not specified in the recipe file');
         }
 
-        if (empty($this->options['author']['email'])) {
+        if (empty($this->recipe['author']['email'])) {
             throw new moodle_exception('Author email not specified in the recipe file');
         }
 
         // Every template requires the 'year' variable for the boilerplate.
-        $this->options['year'] = userdate(time(), '%Y');
+        $this->recipe['year'] = userdate(time(), '%Y');
 
         foreach (self::$boilerplateoptions as $option) {
-            if (empty($this->options[$option])) {
+            if (empty($this->recipe[$option])) {
                 throw new moodle_exception('Option "' . $option . '" required for the boilerplate missing');
             }
         }
@@ -112,7 +112,7 @@ class tool_pluginkenobi_processor {
 
         require_once(__DIR__ . '/' . $this->plugintype . '_generator.php');
         $generatorname = 'tool_pluginkenobi_' . $this->plugintype . '_generator';
-        $generator = new $generatorname($this->options, $this->targetdir);
+        $generator = new $generatorname($this->recipe, $this->targetdir);
         $generator->generate();
         // Update the target directory, the generator might use the default plugin location. */
         $this->targetdir = $generator->get_target_directory();
@@ -121,7 +121,7 @@ class tool_pluginkenobi_processor {
         foreach ($this->requiredtemplates as $template) {
             require_once(__DIR__ . '/' . $template . '_generator.php');
             $generatorname = 'tool_pluginkenobi_' . $template . '_generator';
-            $generator = new $generatorname($this->options, $this->targetdir);
+            $generator = new $generatorname($this->recipe, $this->targetdir);
             $generator->generate();
         }
     }
