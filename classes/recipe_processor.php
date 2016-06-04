@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * File containing the recipe_reader class
+ * File containing the recipe_processor class
  *
  * @package    tool_pluginkenobi
  * @copyright  2016 Alexandru Elisei
@@ -28,13 +28,13 @@ require_once(__DIR__ . '/../Spyc/Spyc.php');
 require_once(__DIR__ . '/../../../../config.php');
 
 /**
- * Recipe_reader class.
+ * Recipe_processor class.
  *
  * @package    tool_pluginkenobi
  * @copyright  2016 Alexandru Elisei
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class tool_pluginkenobi_recipe_reader {
+class tool_pluginkenobi_recipe_processor {
     /**
      * Process and return the recipe file.
      *

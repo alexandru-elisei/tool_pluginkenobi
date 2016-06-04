@@ -26,7 +26,6 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->libdir . '/moodlelib.php');
 require_once($CFG->libdir . '/classes/component.php');
-require_once(__DIR__ . '/recipe_reader.php');
 
 /**
  * Processor class.

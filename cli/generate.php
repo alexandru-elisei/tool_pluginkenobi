@@ -27,7 +27,7 @@ define('CLI_SCRIPT', true);
 require(__DIR__ . '/../../../../config.php');
 require_once($CFG->libdir . '/clilib.php');
 require_once(__DIR__ . '/../classes/processor.php');
-require_once(__DIR__ . '/../classes/recipe_reader.php');
+require_once(__DIR__ . '/../classes/recipe_processor.php');
 
 // Now get cli options.
 list($options, $unrecognized) = cli_get_params(array(
@@ -68,15 +68,15 @@ if (empty($options['recipe'])) {
     echo $help;
     die();
 } else {
-    $recipelocation = $options['recipe'];
+    $recipefile = $options['recipe'];
     // Expanding '~' on Unix-like OS'es.
-    if ($recipelocation[0] === '~') {
+    if ($recipefile[0] === '~') {
         $homedir = getenv('HOME');
-        $recipelocation = $homedir . substr($recipelocation, 1);
+        $recipefile = $homedir . substr($recipefile, 1);
     }
 
-    $recipelocation = realpath($options['recipe']);
-    if ($recipelocation === false) {
+    $recipefile = realpath($options['recipe']);
+    if ($recipefile === false) {
         echo("\nInvalid recipe file!\n");
         echo $help;
         die();
@@ -106,6 +106,6 @@ if (!empty($options['targetdir'])) {
     $targetdir = null;
 }
 
-$options = tool_pluginkenobi_recipe_reader::load($recipelocation);
+$options = tool_pluginkenobi_recipe_processor::load($recipefile);
 $processor = new tool_pluginkenobi_processor($options, $targetdir);
 $processor->generate();
