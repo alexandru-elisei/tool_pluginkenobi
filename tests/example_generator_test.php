@@ -34,7 +34,7 @@ require_once($CFG->libdir . '/setuplib.php');
  * @copyright  2016 Alexandru Elisei alexandru.elisei@gmail.com
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class tool_downloaddata_processor_testcase extends advanced_testcase {
+class tool_pluginkenobi_example_generator_testcase extends advanced_testcase {
 
     /** @var string[] Basic recipe. */
     protected static $baserecipe = array(

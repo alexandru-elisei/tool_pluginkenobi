@@ -112,7 +112,7 @@ class tool_pluginkenobi_processor {
         require_once(__DIR__ . '/' . $this->plugintype . '_generator.php');
         $generatorname = 'tool_pluginkenobi_' . $this->plugintype . '_generator';
         $generator = new $generatorname($this->recipe, $this->targetdir);
-        $generator->generate();
+        $generator->generate_files();
         // Update the target directory, the generator might use the default plugin location. */
         $this->targetdir = $generator->get_target_directory();
 
@@ -121,7 +121,7 @@ class tool_pluginkenobi_processor {
             require_once(__DIR__ . '/' . $template . '_generator.php');
             $generatorname = 'tool_pluginkenobi_' . $template . '_generator';
             $generator = new $generatorname($this->recipe, $this->targetdir);
-            $generator->generate();
+            $generator->generate_files();
         }
     }
 }
