@@ -64,7 +64,7 @@ abstract class tool_pluginkenobi_generator_base {
             $templatepath = $CFG->dirroot . '/admin/tool/pluginkenobi/' . $template;
             $contents = tool_pluginkenobi_template_processor::load($templatepath, $this->recipe);
 
-            $outputfilepath = $this->targetdir . $outputfile;
+            $outputfilepath = $this->targetdir . '/' . $outputfile;
             if (file_exists($outputfilepath)) {
                 throw new moodle_exception('File "' . $outputfilepath . '" already exists');
             } else {

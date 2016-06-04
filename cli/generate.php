@@ -97,13 +97,6 @@ if (!empty($options['targetdir'])) {
         echo $help;
         die();
     }
-
-    // Target directories must end with a '/'.
-    if ($targetdir[strlen($targetdir) - 1] != '/') {
-        $targetdir = $targetdir . '/';
-    }
-} else {
-    $targetdir = null;
 }
 
 $options = tool_pluginkenobi_recipe_processor::load($recipefile);

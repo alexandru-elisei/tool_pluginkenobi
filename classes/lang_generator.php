@@ -54,11 +54,11 @@ class tool_pluginkenobi_lang_generator extends tool_pluginkenobi_generator_base 
      *
      * @throws moodle_exception.
      * @param string[] $recipe The recipe for generating the plugin.
-     * @param string $targetdirectory The directory where the file will be saved.
+     * @param string $targetdir The directory where the file will be saved.
      */
     public function __construct($recipe, $targetdir) {
         // TODO: Add support for more locale.
-        $this->targetdir = $targetdir . 'lang/en/';
+        $this->targetdir = $targetdir . '/lang/en/';
 
         $this->recipe['author']['name'] = $recipe['author']['name'];
         $this->recipe['author']['email'] = $recipe['author']['email'];

@@ -140,9 +140,9 @@ class tool_pluginkenobi_example_generator extends tool_pluginkenobi_generator_ba
 
         list($unused, $plugin) = core_component::normalize_component($this->recipe['component']);
         if (empty($targetdir)) {
-            $this->targetdir = $CFG->dirroot . $this->defaultplugindirectory . $plugin . '/';
+            $this->targetdir = $CFG->dirroot . '/' . $this->defaultplugindirectory . '/' . $plugin;
         } else {
-            $this->targetdir = $targetdir . $plugin . '/';
+            $this->targetdir = $targetdir . '/' . $plugin;
         }
     }
 
