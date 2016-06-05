@@ -49,7 +49,7 @@ class tool_pluginkenobi_lang_generator extends tool_pluginkenobi_generator_base 
      * @param string $feature The feature name.
      */
     protected function add_feature_files($feature) {
-        $this->generatedfiles['skel/lang'] = 'lang/en/' . $this->component . '.php';
+        $this->outputfiles['skel/lang'] = 'lang/en/' . $this->component . '.php';
     }
 
 }
