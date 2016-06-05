@@ -122,37 +122,42 @@ abstract class tool_pluginkenobi_generator_base {
     public function generate_files() {
         global $CFG;
 
-        $path = $this->get_target_path();
-
-        if (!file_exists($path)) {
-            $result = mkdir($path, 0755, true);
-            if ($result === false) {
-                throw new moodle_exception('Cannot create directory "' . $path . '"');
-            }
-        }
-
+        $targetpath = $this->prepare_target_path();
         foreach ($this->outputfiles as $template => $outputfile) {
+            // Preparing the location of the template file and the generated file.
             $templatepath = $CFG->dirroot . '/admin/tool/pluginkenobi/' . $template;
             $contents = tool_pluginkenobi_template_processor::load($templatepath, $this->recipe);
-
-            $outputfilepath = $path . '/' . $outputfile;
-            if (file_exists($outputfilepath)) {
-                throw new moodle_exception('File "' . $outputfilepath . '" already exists');
-            } else {
-                $dirpath = dirname($outputfilepath);
-                // Creating the directory hierarchy if it doesn't exist.
-                if (!file_exists($dirpath)) {
-                    $result = mkdir($dirpath, 0755, true);
-                    if ($result === false) {
-                        throw new moodle_exception('Cannot create directory "' . $dirpath . '"');
-                    }
-                }
-            }
+            $outputfilepath = $this->prepare_file_path($targetpath, $outputfile);
 
             $filehandle = fopen($outputfilepath, 'w');
             fputs($filehandle, $contents);
             fclose($filehandle);
         }
+    }
+
+    /**
+     * Prepares the location of a file by creating all the necessary subdirectories.
+     *
+     * @param string $targetpath The target path for the plugin.
+     * @param string $filepath The file path.
+     * @return string The prepared path.
+     */
+    protected function prepare_file_path($targetpath, $filepath) {
+        $outputfilepath = $targetpath . '/' . $filepath;
+        if (file_exists($outputfilepath)) {
+            throw new moodle_exception('File "' . $outputfilepath . '" already exists');
+        } else {
+            $dirpath = dirname($outputfilepath);
+            // Creating the directory hierarchy if it doesn't exist.
+            if (!file_exists($dirpath)) {
+                $result = mkdir($dirpath, 0755, true);
+                if ($result === false) {
+                    throw new moodle_exception('Cannot create directory "' . $dirpath . '"');
+                }
+            }
+        }
+
+        return $outputfilepath;
     }
 
     /**
@@ -180,17 +185,24 @@ abstract class tool_pluginkenobi_generator_base {
     }
 
     /**
-     * Returns the path to the directory where the plugin's files will be generated.
-     * This directory includes the plugin name.
+     * Prepares the path to the directory where the plugin's files will be generated.
+     * All the subdirectories on the path will be generated.
      *
      * @param string $targetdir The directory specified by the user.
      * @param string $component The component name.
      */
-    protected function get_target_path() {
+    protected function prepare_target_path() {
         list($unused, $plugin) = core_component::normalize_component($this->component);
-        $path = $this->targetdir . '/' . $plugin;
+        $targetpath = $this->targetdir . '/' . $plugin;
 
-        return $path;
+        if (!file_exists($targetpath)) {
+            $result = mkdir($targetpath, 0755, true);
+            if ($result === false) {
+                throw new moodle_exception('Cannot create directory "' . $path . '"');
+            }
+        }
+
+        return $targetpath;
     }
 
     /**
