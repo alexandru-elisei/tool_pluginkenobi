@@ -35,6 +35,12 @@ require_once(__DIR__ . '/processor.php');
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 abstract class tool_pluginkenobi_generator_base {
+    /** @var string The component name. */
+    protected $component;
+
+    /** @var string Default plugin location. */
+    protected $defaultlocation;
+
     /** @var string Directory where the plugin files will be generated. */
     protected $targetdir;
 
@@ -59,13 +65,13 @@ abstract class tool_pluginkenobi_generator_base {
 
         $this->recipe['author']['name'] = $recipe['author']['name'];
         $this->recipe['author']['email'] = $recipe['author']['email'];
+        $this->component = $recipe['component'];
+        $this->targetdir = empty($targetdir) ? $this->defaultlocation : $targetdir;
 
         // Adding the boilerplate variables.
         foreach (tool_pluginkenobi_processor::$boilerplateoptions as $option) {
             $this->recipe[$option] = $recipe[$option];
         }
-
-        $this->set_target_directory($targetdir, $this->recipe['component']);
 
         // Core features will always be generated.
         $requestedfeatures = array('core');
@@ -86,7 +92,6 @@ abstract class tool_pluginkenobi_generator_base {
         }
 
         foreach ($requestedfeatures as $feature) {
-
             list($required, $invalid) = $this->validate_options($recipe, $this->features[$feature]['requiredoptions'], true);
             if (!is_null($invalid)) {
                 throw new moodle_exception('Invalid or missing option "' . $invalid . '"');
@@ -111,19 +116,26 @@ abstract class tool_pluginkenobi_generator_base {
         }
     }
 
+    /**
+     * Generates all the files needed for the plugin.
+     */
     public function generate_files() {
         global $CFG;
 
-        $result = mkdir($this->targetdir, 0755, true);
-        if ($result === false) {
-            throw new moodle_exception('Cannot create directory "' . $this->targetdir . '"');
+        $path = $this->get_target_path();
+
+        if (!file_exists($path)) {
+            $result = mkdir($path, 0755, true);
+            if ($result === false) {
+                throw new moodle_exception('Cannot create directory "' . $path . '"');
+            }
         }
 
         foreach ($this->generatedfiles as $template => $outputfile) {
             $templatepath = $CFG->dirroot . '/admin/tool/pluginkenobi/' . $template;
             $contents = tool_pluginkenobi_template_processor::load($templatepath, $this->recipe);
 
-            $outputfilepath = $this->targetdir . '/' . $outputfile;
+            $outputfilepath = $path . '/' . $outputfile;
             if (file_exists($outputfilepath)) {
                 throw new moodle_exception('File "' . $outputfilepath . '" already exists');
             } else {
@@ -143,6 +155,12 @@ abstract class tool_pluginkenobi_generator_base {
         }
     }
 
+    /**
+     * Returns the directory where the plugin will be created.
+     * This directory does not include the plugin name.
+     *
+     * @return string The target directory.
+     */
     public function get_target_directory() {
         return $this->targetdir;
     }
@@ -162,18 +180,17 @@ abstract class tool_pluginkenobi_generator_base {
     }
 
     /**
-     * Sets the target directory for the plugin.
+     * Returns the path to the directory where the plugin's files will be generated.
+     * This directory includes the plugin name.
      *
      * @param string $targetdir The directory specified by the user.
      * @param string $component The component name.
      */
-    protected function set_target_directory($targetdir, $component) {
-        list($unused, $plugin) = core_component::normalize_component($component);
-        if (empty($targetdir)) {
-            $this->targetdir = $CFG->dirroot . '/' . $this->defaultplugindirectory . '/' . $plugin;
-        } else {
-            $this->targetdir = $targetdir . '/' . $plugin;
-        }
+    protected function get_target_path() {
+        list($unused, $plugin) = core_component::normalize_component($this->component);
+        $path = $this->targetdir . '/' . $plugin;
+
+        return $path;
     }
 
     /**
@@ -207,10 +224,16 @@ abstract class tool_pluginkenobi_generator_base {
         return array($validated, null);
     }
 
-
+    /**
+     * Adds all the files needed by $feature to the list of generated files.
+     *
+     * @param string $feature The feature name.
+     */
     protected function add_feature_files($feature) {
-        foreach ($this->features[$feature]['files'] as $template => $outputfile) {
-            $this->generatedfiles[$template] = $outputfile;
+        if (!empty($this->features[$feature]['files'])) {
+            foreach ($this->features[$feature]['files'] as $template => $outputfile) {
+                $this->generatedfiles[$template] = $outputfile;
+            }
         }
     }
 }

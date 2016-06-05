@@ -40,20 +40,16 @@ class tool_pluginkenobi_lang_generator extends tool_pluginkenobi_generator_base 
         'core'  => array(
             'requiredoptions'   => array('name'),
             'optionaloptions'   => array(),
-            'files'             => array(
-                'skel/lang' => ''
-            )));
+            'files'             => array()
+        ));
 
     /**
-     * Sets the target directory for the plugin.
+     * Adds all the files needed by $feature to the list of generated files.
      *
-     * @param string $targetdir The directory specified by the user.
-     * @param string $component The component name.
+     * @param string $feature The feature name.
      */
-    protected function set_target_directory($targetdir, $component) {
-        list($unused, $plugin) = core_component::normalize_component($component);
-        $this->targetdir = $targetdir . '/lang/en';
-        $this->features['core']['files']['skel/lang'] = $component . '.php';
+    protected function add_feature_files($feature) {
+        $this->generatedfiles['skel/lang'] = 'lang/en/' . $this->component . '.php';
     }
 
 }

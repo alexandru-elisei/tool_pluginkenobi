@@ -54,7 +54,7 @@ class tool_pluginkenobi_example_generator extends tool_pluginkenobi_generator_ba
     protected $maturitylevels = array('MATURITY_ALPHA', 'MATURITY_BETA', 'MATURITY_RC', 'MATURITY_STABLE');
 
     /** @var string The default location of the generated plugin relative to the Moodle directory. */
-    protected $defaultplugindirectory = '/admin/tool/';
+    protected $defaultlocation = 'admin/tool/';
 
     /** @var $string[] List of features that the plugin has. */
     protected $features = array(
