@@ -39,7 +39,7 @@ class tool_pluginkenobi_lang_generator_testcase extends advanced_testcase {
     /** @var string[] Basic recipe. */
     protected static $baserecipe = array(
         'component' => 'langgeneratortest',
-        'name'      => 'Lang_generator test',
+        'name'      => 'lang_generator test',
         'year'      => '2016',
         'author'    => array(
             'name'  => 'Alexandru Elisei',
