@@ -20,9 +20,15 @@
  * You can have a rather longer description of the file as well,
  * if you like, and it can span multiple lines.
  *
- * @package    example_test
+ * @package    local_localgeneratortest
  * @copyright  2016 Alexandru Elisei alexandru.elisei@gmail.com
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$string['pluginname'] = 'Example test';
+defined('MOODLE_INTERNAL') || die();
+
+$plugin->version = 2016121200
+$plugin->requires = 2015051100
+$plugin->component = local_localgeneratortest
+$plugin->release = 0.1
+$plugin->maturity = MATURITY_ALPHA

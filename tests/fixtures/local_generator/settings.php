@@ -20,7 +20,7 @@
  * You can have a rather longer description of the file as well,
  * if you like, and it can span multiple lines.
  *
- * @package    example_test
+ * @package    local_localgeneratortest
  * @copyright  2016 Alexandru Elisei alexandru.elisei@gmail.com
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */

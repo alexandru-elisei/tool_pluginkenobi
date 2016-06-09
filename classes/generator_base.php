@@ -87,7 +87,7 @@ abstract class tool_pluginkenobi_generator_base {
                     }
             } else {
                 foreach ($this->features as $feature => $notused) {
-                    if (!empty($recipe['features'][$feature]) && $recipe['feature'][$feature] == $true) {
+                    if (!empty($recipe['features'][$feature]) && $recipe['features'][$feature] === true) {
                         $requestedfeatures[] = $feature;
                     }
                 }
