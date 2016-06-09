@@ -118,8 +118,9 @@ abstract class tool_pluginkenobi_generator_base {
 
                 $this->add_feature_files($feature);
             } else {
-                $generatorname = $this->features[$feature];
-                $helper = new generatorname($recipe, $this->targetdir);
+                require_once(__DIR__ . '/' . $this->features[$feature] . '.php');
+                $generatorname = 'tool_pluginkenobi_' . $this->features[$feature];
+                $helper = new $generatorname($recipe, $this->targetdir);
                 $this->helpergenerators[] = $helper;
             }
         }

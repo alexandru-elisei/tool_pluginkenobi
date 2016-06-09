@@ -47,7 +47,7 @@ class tool_pluginkenobi_processor {
     protected $recipe = array();
 
     /** @var string[] $supportedplugintypes The supported plugin types. */
-    protected $supportedplugintypes = array('example');
+    protected $supportedplugintypes = array('example', 'local');
 
     /** @var string[] Templates required for every plugin. */
     protected $requiredtemplates = array('lang');
