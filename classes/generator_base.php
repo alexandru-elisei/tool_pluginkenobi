@@ -69,7 +69,7 @@ abstract class tool_pluginkenobi_generator_base {
         $this->recipe['author']['name'] = $recipe['author']['name'];
         $this->recipe['author']['email'] = $recipe['author']['email'];
         $this->component = $recipe['component'];
-        $this->targetdir = empty($targetdir) ? $this->defaultlocation : $targetdir;
+        $this->targetdir = empty($targetdir) ? ($CFG->rootdir . '/' . $this->defaultlocation) : $targetdir;
 
         // Adding the boilerplate variables.
         foreach (tool_pluginkenobi_processor::$boilerplateoptions as $option) {
