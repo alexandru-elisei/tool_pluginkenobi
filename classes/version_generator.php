@@ -72,21 +72,15 @@ class tool_pluginkenobi_version_generator extends tool_pluginkenobi_generator_ba
     protected function validate_value($option, $value) {
         if ($option == 'requires') {
             if (!isset($this->moodleversions[$value])) {
-                return null;
+                throw new moodle_exception('Unknown version number "' . $value . '"');
             }
             return $this->moodleversions[$value];
         }
 
-        if ($option == 'maturity') {
-            if (!in_array($value, $this->maturitylevels)) {
-                return null;
-            }
+        if ($option == 'maturity' && !in_array($value, $this->maturitylevels)) {
+            throw new moodle_exception('Unknown maturity level "' . $value . '"');
         }
 
-        if (empty($value)) {
-            return null;
-        } else {
-            return $value;
-        }
+        return $value;
     }
 }

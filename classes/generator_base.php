@@ -69,7 +69,7 @@ abstract class tool_pluginkenobi_generator_base {
         $this->recipe['author']['name'] = $recipe['author']['name'];
         $this->recipe['author']['email'] = $recipe['author']['email'];
         $this->component = $recipe['component'];
-        $this->targetdir = empty($targetdir) ? ($CFG->rootdir . '/' . $this->defaultlocation) : $targetdir;
+        $this->targetdir = empty($targetdir) ? ($CFG->dirroot . '/' . $this->defaultlocation) : $targetdir;
 
         // Adding the boilerplate variables.
         foreach (tool_pluginkenobi_processor::$boilerplateoptions as $option) {
@@ -138,20 +138,14 @@ abstract class tool_pluginkenobi_generator_base {
      * @param string[] $recipe The plugin recipe.
      */
     protected function process_feature_options($feature, $recipe) {
-        list($required, $invalid) = $this->validate_options($recipe, $this->features[$feature]['requiredoptions'], true);
-        if (!is_null($invalid)) {
-            throw new moodle_exception('Invalid or missing option "' . $invalid . '"');
-        }
+        $required = $this->validate_options($recipe, $this->features[$feature]['requiredoptions'], true);
         if (!empty($required)) {
             foreach ($required as $option => $value) {
                 $this->recipe[$option] = $value;
             }
         }
 
-        list($optional, $invalid) = $this->validate_options($recipe, $this->features[$feature]['optionaloptions']);
-        if (!is_null($invalid)) {
-            throw new moodle_exception('Invalid value "' . $recipe[$invalid] . '" for feature ' . $feature);
-        }
+        $optional = $this->validate_options($recipe, $this->features[$feature]['optionaloptions']);
         if (!empty($optional)) {
             foreach ($optional as $option => $value) {
                 $this->recipe[$option] = $value;
@@ -201,11 +195,7 @@ abstract class tool_pluginkenobi_generator_base {
      * @return string | null The validated option value or null if it's not a valid value.
      */
     protected function validate_value($option, $value) {
-        if (empty($value)) {
-            return null;
-        } else {
-            return $value;
-        }
+        return $value;
     }
 
     /**
@@ -235,28 +225,22 @@ abstract class tool_pluginkenobi_generator_base {
      * @param string[] $recipe The recipe.
      * @param string[] $options The options to validate against.
      * @param bool $mustexist If the options must exist in the recipe in order to pass validation.
+     * @return string[] The validated options.
      */
     protected function validate_options($recipe, $options, $mustexist = false) {
-        if (empty($options)) {
-            return array(null, null);
-        }
-
         $validated = array();
         foreach ($options as $option) {
             if ($mustexist && empty($recipe[$option])) {
-                return array(null, $option);
+                throw new moodle_exception('Required options "' . $option . '" missing');
             }
 
             if (!empty($recipe[$option])) {
                 $value = $this->validate_value($option, $recipe[$option]);
-                if (is_null($value)) {
-                    return array(null, $option);
-                }
                 $validated[$option] = $value;
             }
         }
 
-        return array($validated, null);
+        return $validated;
     }
 
     /**
