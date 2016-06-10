@@ -96,26 +96,7 @@ abstract class tool_pluginkenobi_generator_base {
 
         foreach ($requestedfeatures as $feature) {
             if (is_array($this->features[$feature])) {
-                list($required, $invalid) = $this->validate_options($recipe, $this->features[$feature]['requiredoptions'], true);
-                if (!is_null($invalid)) {
-                    throw new moodle_exception('Invalid or missing option "' . $invalid . '"');
-                }
-                if (!empty($required)) {
-                    foreach ($required as $option => $value) {
-                        $this->recipe[$option] = $value;
-                    }
-                }
-
-                list($optional, $invalid) = $this->validate_options($recipe, $this->features[$feature]['optionaloptions']);
-                if (!is_null($invalid)) {
-                    throw new moodle_exception('Invalid value "' . $recipe[$invalid] . '" for feature ' . $feature);
-                }
-                if (!empty($optional)) {
-                    foreach ($optional as $option => $value) {
-                        $this->recipe[$option] = $value;
-                    }
-                }
-
+                $this->process_feature_options($feature, $recipe);
                 $this->add_feature_files($feature);
             } else {
                 require_once(__DIR__ . '/' . $this->features[$feature] . '.php');
@@ -146,6 +127,35 @@ abstract class tool_pluginkenobi_generator_base {
 
         foreach ($this->helpergenerators as $generator) {
             $generator->generate_files();
+        }
+    }
+
+    /**
+     * Extracts and validates the options needed for the feature.
+     *
+     * @throws moodle_exception
+     * @param string $feature The feature name.
+     * @param string[] $recipe The plugin recipe.
+     */
+    protected function process_feature_options($feature, $recipe) {
+        list($required, $invalid) = $this->validate_options($recipe, $this->features[$feature]['requiredoptions'], true);
+        if (!is_null($invalid)) {
+            throw new moodle_exception('Invalid or missing option "' . $invalid . '"');
+        }
+        if (!empty($required)) {
+            foreach ($required as $option => $value) {
+                $this->recipe[$option] = $value;
+            }
+        }
+
+        list($optional, $invalid) = $this->validate_options($recipe, $this->features[$feature]['optionaloptions']);
+        if (!is_null($invalid)) {
+            throw new moodle_exception('Invalid value "' . $recipe[$invalid] . '" for feature ' . $feature);
+        }
+        if (!empty($optional)) {
+            foreach ($optional as $option => $value) {
+                $this->recipe[$option] = $value;
+            }
         }
     }
 
