@@ -45,33 +45,41 @@ class tool_pluginkenobi_recipe_processor {
      */
     public static function load($filename) {
         try {
-            $data = Spyc::YAMLLoad($filename);
+            $recipe = Spyc::YAMLLoad($filename);
         } catch (Exception $e) {
             throw new moodle_exception('Error loading file "' . $filename . '": ' . $e->getMessage());
         }
 
         // Extracting author name and email.
-        if (!empty($data['author']) && is_array($data['author'])) {
-            foreach ($data['author'] as $entry) {
+        if (!empty($recipe['author']) && is_array($recipe['author'])) {
+            foreach ($recipe['author'] as $entry) {
                 if (!empty($entry['name'])) {
-                    $data['author']['name'] = $entry['name'];
+                    $recipe['author']['name'] = $entry['name'];
                 } else if (!empty($entry['email'])) {
-                    $data['author']['email'] = $entry['email'];
+                    $recipe['author']['email'] = $entry['email'];
                 }
             }
         }
 
-        // Extracting requested features.
-        $requestedfeatures = array();
-        if (!empty($data['features']) && is_array($data['features'])) {
-            foreach ($data['features'] as $entry) {
-                $value = reset($entry);
-                $option = key($entry);
-                $requestedfeatures[$option] = $value;
-            }
+        // Preparing the requested features.
+        if (!empty($recipe['features']) && is_array($recipe['features'])) {
+            $requestedfeatures = self::prepare_features($recipe['features']);
+            $recipe['features'] = $requestedfeatures;
         }
-        $data['features'] = $requestedfeatures;
 
-        return $data;
+        return $recipe;
     }
+
+    protected static function prepare_features($features) {
+        $processedfeatures = array();
+        foreach ($features as $feature) {
+            $option = key($feature);
+            $value = reset($feature);
+            $processedfeatures[$option] = $value;
+        }
+
+        return $processedfeatures;
+    }
+
+
 }
