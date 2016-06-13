@@ -67,19 +67,63 @@ class tool_pluginkenobi_recipe_processor {
             $recipe['features'] = $requestedfeatures;
         }
 
+        // Preparing the capabilities.
+        if (!empty($recipe['capabilities']) && is_array($recipe['capabilities'])) {
+            $capabilities = self::prepare_capabilities($recipe['capabilities']);
+            $recipe['capabilities'] = $capabilities;
+        }
+
         return $recipe;
     }
 
+    /**
+     * Prepares the recipe features in a format understood by the generators.
+     *
+     * @param string[] $features The list of a features.
+     * @return string[] The modified list of features.
+     */
     protected static function prepare_features($features) {
-        $processedfeatures = array();
+        $preparedfeatures = array();
         foreach ($features as $feature) {
             $option = key($feature);
             $value = reset($feature);
-            $processedfeatures[$option] = $value;
+            $preparedfeatures[$option] = $value;
         }
 
-        return $processedfeatures;
+        return $preparedfeatures;
     }
 
+    /**
+     * Returns the list of capabilities in a format understood by the db_access_generator.
+     *
+     * @param string[] $capabilities The list of capabilities from the recipe.
+     * @return string[] The capabilities for the generator.
+     */
+    protected static function prepare_capabilities($capabilities) {
+        $ret = array();
+        foreach ($capabilities as $index => $description) {
+            foreach ($description as $name => $cap) {
+                $ret[$index]['capname'] = $name;
+                foreach ($cap as $notused => $fieldarr) {
+                    $fieldname = key($fieldarr);
+                    $fieldvalue = reset($fieldarr);
+                    if ($fieldname === 'archetypes') {
+                        $ret[$index]['archetypes'] = array();
+                        foreach ($fieldvalue as $key => $archetypedescription) {
+                            $role = key($archetypedescription);
+                            $permission = reset($archetypedescription);
+                            $ret[$index]['archetypes'][$key] = array(
+                                'role' => $role,
+                                'permission' => $permission
+                            );
+                        }
+                    } else {
+                        $ret[$index][$fieldname] = $fieldvalue;
+                    }
+                }
+            }
+        }
 
+        return $ret;
+    }
 }
