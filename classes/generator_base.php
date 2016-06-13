@@ -105,6 +105,8 @@ abstract class tool_pluginkenobi_generator_base {
                 $this->helpergenerators[] = $helper;
             }
         }
+
+        $this->execute_additional_steps($recipe);
     }
 
     /**
@@ -254,5 +256,16 @@ abstract class tool_pluginkenobi_generator_base {
                 $this->outputfiles[$template] = $outputfile;
             }
         }
+    }
+
+    /**
+     * Executes additional steps required for the creation of the recipe.
+     *
+     * This function will be overridden by derived generator classes.
+     *
+     * @param string[] $recipe The recipe.
+     */
+    protected function execute_additional_steps($recipe) {
+        return;
     }
 }
