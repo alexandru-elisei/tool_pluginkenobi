@@ -123,4 +123,37 @@ class tool_pluginkenobi_local_generator_testcase extends advanced_testcase {
         $this->assertFileEquals($settingsfile, self::$fixtures . '/settings.php');
     }
 
+    /**
+     * Tests generating a local plugin type with the 'access' feature.
+     */
+    public function test_with_access() {
+        $recipe = self::$baserecipe;
+        $recipe['features'] = array(
+            'access' => true
+        );
+        $recipe['capabilities'] = array(
+            array(
+                'capname' => 'view',
+                'captype' => 'read',
+                'contextlevel' => 'CONTEXT_MODULE',
+                'archetypes' => array(
+                    array('role' => 'student', 'permission' => 'CAP_ALLOW'),
+                    array('role' => 'editingteacher', 'permission' => 'CAP_ALLOW'))
+            )
+        );
+        $targetdir = make_request_directory();
+
+        $processor = new tool_pluginkenobi_processor($recipe, $targetdir);
+        $processor->generate();
+
+        $versionfile = $targetdir . '/localgeneratortest/version.php';
+        $this->assertFileEquals($versionfile, self::$fixtures . '/version.php');
+
+        $langfile = $targetdir . '/localgeneratortest/lang/en/local_localgeneratortest.php';
+        $this->assertFileEquals($langfile, self::$fixtures . '/lang/en/local_localgeneratortest.php');
+
+        $dbaccessfile = $targetdir . '/localgeneratortest/db/access.php';
+        $this->assertFileEquals($dbaccessfile, self::$fixtures . '/db/access.php');
+    }
+
 }
