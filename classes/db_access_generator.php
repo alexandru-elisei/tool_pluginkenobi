@@ -58,7 +58,7 @@ class tool_pluginkenobi_db_access_generator extends tool_pluginkenobi_generator_
                                      'CONTEXT_USER', 'CONTEXT_COURSECAT');
 
     /** @var string[] List of possible permission for an archetype. */
-    protected $permissions = array('CAP_ALLOW');
+    protected $permissions = array('CAP_ALLOW', 'CAP_PREVENT');
 
     /**
      * Extracts and validates the options needed for the feature.
