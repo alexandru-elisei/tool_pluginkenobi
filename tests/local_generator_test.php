@@ -129,18 +129,16 @@ class tool_pluginkenobi_local_generator_testcase extends advanced_testcase {
     public function test_with_access() {
         $recipe = self::$baserecipe;
         $recipe['features'] = array(
-            'access' => true
-        );
-        $recipe['capabilities'] = array(
-            array(
-                'capname' => 'view',
-                'captype' => 'read',
-                'contextlevel' => 'CONTEXT_MODULE',
-                'archetypes' => array(
-                    array('role' => 'student', 'permission' => 'CAP_ALLOW'),
-                    array('role' => 'editingteacher', 'permission' => 'CAP_ALLOW'))
-            )
-        );
+            'access' => array(
+                array(
+                    'name' => 'view',
+                    'captype' => 'read',
+                    'contextlevel' => 'CONTEXT_MODULE',
+                    'archetypes' => array(
+                        array('role' => 'student', 'permission' => 'CAP_ALLOW'),
+                        array('role' => 'editingteacher', 'permission' => 'CAP_ALLOW'))
+                    )
+                ));
         $targetdir = make_request_directory();
 
         $processor = new tool_pluginkenobi_processor($recipe, $targetdir);

@@ -4,9 +4,9 @@
 defined('MOODLE_INTERNAL') || die();
 
 $capabilities = array(
-    {{# capabilities}}
+    {{# features.access}}
 
-    '{{type}}/{{plugin}}:{{capname}}' => array(
+    '{{type}}/{{plugin}}:{{name}}' => array(
         {{# riskbitmask}}
         'riskbitmask' => {{riskbitmask}},
         {{/ riskbitmask}}
@@ -14,12 +14,12 @@ $capabilities = array(
         'contextlevel' => {{contextlevel}},
         'archetypes' => array(
             {{# archetypes}}
-            {{role}} => {{permission}},
+            '{{role}}' => {{permission}},
             {{/ archetypes}}
         ),
         {{# clonepermissionsfrom}}
-        'clonepermissionsfrom = {{clonepermissionsfrom}}
+        'clonepermissionsfrom = '{{clonepermissionsfrom}}'
         {{/ clonepermissionsfrom}}
     ),
-    {{/ capabilities}}
+    {{/ features.access}}
 )

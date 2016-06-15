@@ -87,7 +87,7 @@ abstract class tool_pluginkenobi_generator_base {
                     }
             } else {
                 foreach ($this->features as $feature => $notused) {
-                    if (!empty($recipe['features'][$feature]) && $recipe['features'][$feature] === true) {
+                    if (!empty($recipe['features'][$feature])) {
                         $requestedfeatures[] = $feature;
                     }
                 }
@@ -214,7 +214,7 @@ abstract class tool_pluginkenobi_generator_base {
         if (!file_exists($targetpath)) {
             $result = mkdir($targetpath, 0755, true);
             if ($result === false) {
-                throw new moodle_exception('Cannot create directory "' . $path . '"');
+                throw new moodle_exception('Cannot create directory "' . $targetpath . '"');
             }
         }
 

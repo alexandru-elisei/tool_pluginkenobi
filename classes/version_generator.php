@@ -53,7 +53,7 @@ class tool_pluginkenobi_version_generator extends tool_pluginkenobi_generator_ba
     /** @var string[] Valid maturity levels. */
     protected $maturitylevels = array('MATURITY_ALPHA', 'MATURITY_BETA', 'MATURITY_RC', 'MATURITY_STABLE');
 
-    /** @var $string[] List of features that the plugin has. */
+    /** @var string[] List of features that the plugin has. */
     protected $features = array(
         'core'      => array(
             'requiredoptions'   => array('component', 'version', 'requires'),

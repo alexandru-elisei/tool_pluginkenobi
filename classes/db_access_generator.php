@@ -40,7 +40,7 @@ class tool_pluginkenobi_db_access_generator extends tool_pluginkenobi_generator_
     /** @var string[] The plugin features. */
     protected $features = array(
         'core'  => array(
-            'requiredoptions'   => array('capname', 'captype', 'contextlevel', 'archetypes'),
+            'requiredoptions'   => array('name', 'captype', 'contextlevel', 'archetypes'),
             'optionaloptions'   => array('riskbitmask', 'clonepermissionsfrom'),
             'files'             => array(
                 'skel/db/access' => 'db/access.php'
@@ -69,13 +69,13 @@ class tool_pluginkenobi_db_access_generator extends tool_pluginkenobi_generator_
      */
     protected function process_feature_options($feature, $recipe) {
         if ($feature === 'core') {
-            if (empty($recipe['capabilities']) || !is_array($recipe['capabilities'])) {
-                throw new moodle_exception('Missing or invalid options "capabilities"');
+            if (empty($recipe['features']['access']) || !is_array($recipe['features']['access'])) {
+                throw new moodle_exception('Missing or invalid feature "capabilities"');
             }
 
-            foreach ($recipe['capabilities'] as $key => $capability) {
+            foreach ($recipe['features']['access'] as $key => $capability) {
                 $capability = $this->validate_capability($capability);
-                $this->recipe['capabilities'][$key] = $capability;
+                $this->recipe['features']['access'][$key] = $capability;
             }
         } else {
             parent::process_feature_options($feature, $recipe);

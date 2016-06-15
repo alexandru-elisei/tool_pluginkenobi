@@ -49,21 +49,23 @@ class tool_pluginkenobi_db_access_generator_testcase extends advanced_testcase {
         'version'   => '2016121200',
         'requires'  => '2.9',
         'maturity'  => 'MATURITY_ALPHA',
-        'capabilities' => array(
-            array(
-                'capname' => 'view',
-                'captype' => 'read',
-                'contextlevel' => 'CONTEXT_MODULE',
-                'archetypes' => array(
-                    array('role' => 'student', 'permission' => 'CAP_ALLOW'),
-                    array('role' => 'editingteacher', 'permission' => 'CAP_ALLOW'))),
-            array(
-                'capname' => 'addinstance',
-                'riskbitmask' => 'RISK_XSS | RISK_CONFIG',
-                'captype' => 'write',
-                'contextlevel' => 'CONTEXT_COURSE',
-                'archetypes' => array(
-                    array('role' => 'manager', 'permission' => 'CAP_ALLOW')))
+        'features'  => array(
+            'access' => array(
+                array(
+                    'name' => 'view',
+                    'captype' => 'read',
+                    'contextlevel' => 'CONTEXT_MODULE',
+                    'archetypes' => array(
+                        array('role' => 'student', 'permission' => 'CAP_ALLOW'),
+                        array('role' => 'editingteacher', 'permission' => 'CAP_ALLOW'))),
+                array(
+                    'name' => 'addinstance',
+                    'riskbitmask' => 'RISK_XSS | RISK_CONFIG',
+                    'captype' => 'write',
+                    'contextlevel' => 'CONTEXT_COURSE',
+                    'archetypes' => array(
+                        array('role' => 'manager', 'permission' => 'CAP_ALLOW')))
+            )
         )
     );
 
@@ -91,7 +93,7 @@ class tool_pluginkenobi_db_access_generator_testcase extends advanced_testcase {
      */
     public function test_missing_capabilities() {
         $recipe = self::$baserecipe;
-        unset($recipe['capabilities']);
+        unset($recipe['features']['access']);
 
         $this->setExpectedException('moodle_exception');
         $generator = new tool_pluginkenobi_db_access_generator($recipe, '');
@@ -104,7 +106,7 @@ class tool_pluginkenobi_db_access_generator_testcase extends advanced_testcase {
      */
     public function test_missing_captype() {
         $recipe = self::$baserecipe;
-        unset($recipe['capabilities'][0]['captype']);
+        unset($recipe['features']['access'][0]['captype']);
 
         $this->setExpectedException('moodle_exception');
         $generator = new tool_pluginkenobi_db_access_generator($recipe, '');
@@ -115,7 +117,7 @@ class tool_pluginkenobi_db_access_generator_testcase extends advanced_testcase {
      */
     public function test_missing_archetypes() {
         $recipe = self::$baserecipe;
-        unset($recipe['capabilities'][1]['archetypes']);
+        unset($recipe['features']['access'][1]['archetypes']);
 
         $this->setExpectedException('moodle_exception');
         $generator = new tool_pluginkenobi_db_access_generator($recipe, '');
@@ -126,7 +128,7 @@ class tool_pluginkenobi_db_access_generator_testcase extends advanced_testcase {
      */
     public function test_invalid_riskbitmask() {
         $recipe = self::$baserecipe;
-        $recipe['capabilities'][0]['captype'] = 'invalid';
+        $recipe['features']['access'][0]['captype'] = 'invalid';
 
         $this->setExpectedException('moodle_exception');
         $generator = new tool_pluginkenobi_db_access_generator($recipe, '');
@@ -137,7 +139,7 @@ class tool_pluginkenobi_db_access_generator_testcase extends advanced_testcase {
      */
     public function test_invalid_archetype_permission() {
         $recipe = self::$baserecipe;
-        $recipe['capabilities'][0]['archetypes'][0]['permission'] = 'invalid';
+        $recipe['features']['access'][0]['archetypes'][0]['permission'] = 'invalid';
 
         $this->setExpectedException('moodle_exception');
         $generator = new tool_pluginkenobi_db_access_generator($recipe, '');

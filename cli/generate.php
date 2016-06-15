@@ -83,6 +83,7 @@ if (empty($options['recipe'])) {
     }
 }
 
+$targetdir = null;
 if (!empty($options['targetdir'])) {
     $targetdir = $options['targetdir'];
     // Expanding '~' on Unix-like OS'es.

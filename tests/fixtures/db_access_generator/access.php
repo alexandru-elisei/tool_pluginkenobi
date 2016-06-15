@@ -33,8 +33,8 @@ $capabilities = array(
         'captype' => 'read',
         'contextlevel' => CONTEXT_MODULE,
         'archetypes' => array(
-            student => CAP_ALLOW,
-            editingteacher => CAP_ALLOW,
+            'student' => CAP_ALLOW,
+            'editingteacher' => CAP_ALLOW,
         ),
     ),
 
@@ -43,7 +43,7 @@ $capabilities = array(
         'captype' => 'write',
         'contextlevel' => CONTEXT_COURSE,
         'archetypes' => array(
-            manager => CAP_ALLOW,
+            'manager' => CAP_ALLOW,
         ),
     ),
 )
