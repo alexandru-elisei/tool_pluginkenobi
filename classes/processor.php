@@ -50,7 +50,7 @@ class tool_pluginkenobi_processor {
     protected $supportedplugintypes = array('local');
 
     /** @var string[] Generators required for every plugin. */
-    protected $requiredgenerators = array('lang', 'version');
+    protected $requiredgenerators = array('lang_generator', 'version_generator');
 
     /** @var string Target directory for the creation of the plugin files. */
     protected $targetdir = null;
@@ -118,8 +118,8 @@ class tool_pluginkenobi_processor {
 
         // Generating the required files.
         foreach ($this->requiredgenerators as $generatorshortname) {
-            require_once(__DIR__ . '/' . $generatorshortname . '_generator.php');
-            $generatorname = 'tool_pluginkenobi_' . $generatorshortname . '_generator';
+            require_once(__DIR__ . '/' . $generatorshortname . '.php');
+            $generatorname = 'tool_pluginkenobi_' . $generatorshortname;
             $generator = new $generatorname($this->recipe, $this->targetdir);
             $generator->generate_files();
         }
