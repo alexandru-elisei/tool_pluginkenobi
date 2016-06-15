@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * File containing the tests for the db_access_generator class.
+ * File containing the tests for the capabilities_generator class.
  *
  * @package    tool_pluginkenobi
  * @copyright  2016 Alexandru Elisei alexandru.elisei@gmail.com
@@ -34,12 +34,12 @@ require_once($CFG->libdir . '/setuplib.php');
  * @copyright  2016 Alexandru Elisei alexandru.elisei@gmail.com
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class tool_pluginkenobi_db_access_generator_testcase extends advanced_testcase {
+class tool_pluginkenobi_capabilities_generator_testcase extends advanced_testcase {
 
     /** @var string[] Basic recipe. */
     protected static $baserecipe = array(
-        'component' => 'dbaccessgeneratortest',
-        'name'      => 'db_access_generator test',
+        'component' => 'capabilitiesgeneratortest',
+        'name'      => 'capabilities_generator test',
         'release'  => '0.1',
         'author'    => array(
             'name'  => 'Alexandru Elisei',
@@ -50,7 +50,7 @@ class tool_pluginkenobi_db_access_generator_testcase extends advanced_testcase {
         'requires'  => '2.9',
         'maturity'  => 'MATURITY_ALPHA',
         'features'  => array(
-            'access' => array(
+            'capabilities' => array(
                 array(
                     'name' => 'view',
                     'captype' => 'read',
@@ -78,7 +78,7 @@ class tool_pluginkenobi_db_access_generator_testcase extends advanced_testcase {
     public static function setUpBeforeClass() {
         global $CFG;
 
-        self::$fixtures = $CFG->dirroot . '/admin/tool/pluginkenobi/tests/fixtures/db_access_generator';
+        self::$fixtures = $CFG->dirroot . '/admin/tool/pluginkenobi/tests/fixtures/capabilities_generator';
     }
 
     /**
@@ -93,10 +93,10 @@ class tool_pluginkenobi_db_access_generator_testcase extends advanced_testcase {
      */
     public function test_missing_capabilities() {
         $recipe = self::$baserecipe;
-        unset($recipe['features']['access']);
+        unset($recipe['features']['capabilities']);
 
         $this->setExpectedException('moodle_exception');
-        $generator = new tool_pluginkenobi_db_access_generator($recipe, '');
+        $generator = new tool_pluginkenobi_capabilities_generator($recipe, '');
 
 
     }
@@ -106,10 +106,10 @@ class tool_pluginkenobi_db_access_generator_testcase extends advanced_testcase {
      */
     public function test_missing_captype() {
         $recipe = self::$baserecipe;
-        unset($recipe['features']['access'][0]['captype']);
+        unset($recipe['features']['capabilities'][0]['captype']);
 
         $this->setExpectedException('moodle_exception');
-        $generator = new tool_pluginkenobi_db_access_generator($recipe, '');
+        $generator = new tool_pluginkenobi_capabilities_generator($recipe, '');
     }
 
     /**
@@ -117,10 +117,10 @@ class tool_pluginkenobi_db_access_generator_testcase extends advanced_testcase {
      */
     public function test_missing_archetypes() {
         $recipe = self::$baserecipe;
-        unset($recipe['features']['access'][1]['archetypes']);
+        unset($recipe['features']['capabilities'][1]['archetypes']);
 
         $this->setExpectedException('moodle_exception');
-        $generator = new tool_pluginkenobi_db_access_generator($recipe, '');
+        $generator = new tool_pluginkenobi_capabilities_generator($recipe, '');
     }
 
      /**
@@ -128,10 +128,10 @@ class tool_pluginkenobi_db_access_generator_testcase extends advanced_testcase {
      */
     public function test_invalid_riskbitmask() {
         $recipe = self::$baserecipe;
-        $recipe['features']['access'][0]['captype'] = 'invalid';
+        $recipe['features']['capabilities'][0]['captype'] = 'invalid';
 
         $this->setExpectedException('moodle_exception');
-        $generator = new tool_pluginkenobi_db_access_generator($recipe, '');
+        $generator = new tool_pluginkenobi_capabilities_generator($recipe, '');
     }
 
      /**
@@ -139,10 +139,10 @@ class tool_pluginkenobi_db_access_generator_testcase extends advanced_testcase {
      */
     public function test_invalid_archetype_permission() {
         $recipe = self::$baserecipe;
-        $recipe['features']['access'][0]['archetypes'][0]['permission'] = 'invalid';
+        $recipe['features']['capabilities'][0]['archetypes'][0]['permission'] = 'invalid';
 
         $this->setExpectedException('moodle_exception');
-        $generator = new tool_pluginkenobi_db_access_generator($recipe, '');
+        $generator = new tool_pluginkenobi_capabilities_generator($recipe, '');
     }
 
     /**
@@ -152,10 +152,10 @@ class tool_pluginkenobi_db_access_generator_testcase extends advanced_testcase {
         $recipe = self::$baserecipe;
         $targetdir = make_request_directory();
 
-        $generator = new tool_pluginkenobi_db_access_generator($recipe, $targetdir);
+        $generator = new tool_pluginkenobi_capabilities_generator($recipe, $targetdir);
         $generator->generate_files();
 
-        $dbaccessfile = $targetdir . '/dbaccessgeneratortest/db/access.php';
+        $dbaccessfile = $targetdir . '/capabilitiesgeneratortest/db/access.php';
         $this->assertFileEquals($dbaccessfile, self::$fixtures . '/access.php');
     }
 }

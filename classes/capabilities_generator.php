@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * File containing the db_access_generator class.
+ * File containing the capabilities_generator class.
  *
  * @package    tool_pluginkenobi
  * @copyright  2016 Alexandru Elisei
@@ -28,7 +28,7 @@ require_once(__DIR__ . '/generator_base.php');
 require_once(__DIR__ . '/processor.php');
 
 /**
- * Db_access_generator class.
+ * Capabilities_generator class.
  *
  * The class will generate the db/access.php file.
  *
@@ -36,7 +36,7 @@ require_once(__DIR__ . '/processor.php');
  * @copyright  2016 Alexandru Elisei
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class tool_pluginkenobi_db_access_generator extends tool_pluginkenobi_generator_base {
+class tool_pluginkenobi_capabilities_generator extends tool_pluginkenobi_generator_base {
     /** @var string[] The plugin features. */
     protected $features = array(
         'core'  => array(
@@ -69,13 +69,13 @@ class tool_pluginkenobi_db_access_generator extends tool_pluginkenobi_generator_
      */
     protected function process_feature_options($feature, $recipe) {
         if ($feature === 'core') {
-            if (empty($recipe['features']['access']) || !is_array($recipe['features']['access'])) {
+            if (empty($recipe['features']['capabilities']) || !is_array($recipe['features']['capabilities'])) {
                 throw new moodle_exception('Missing or invalid feature "capabilities"');
             }
 
-            foreach ($recipe['features']['access'] as $key => $capability) {
+            foreach ($recipe['features']['capabilities'] as $key => $capability) {
                 $capability = $this->validate_capability($capability);
-                $this->recipe['features']['access'][$key] = $capability;
+                $this->recipe['features']['capabilities'][$key] = $capability;
             }
         } else {
             parent::process_feature_options($feature, $recipe);

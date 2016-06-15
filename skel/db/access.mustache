@@ -4,7 +4,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 $capabilities = array(
-    {{# features.access}}
+    {{# features.capabilities}}
 
     '{{type}}/{{plugin}}:{{name}}' => array(
         {{# riskbitmask}}
@@ -21,5 +21,5 @@ $capabilities = array(
         'clonepermissionsfrom = '{{clonepermissionsfrom}}'
         {{/ clonepermissionsfrom}}
     ),
-    {{/ features.access}}
+    {{/ features.capabilities}}
 )

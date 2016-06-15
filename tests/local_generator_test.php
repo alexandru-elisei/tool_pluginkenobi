@@ -129,7 +129,7 @@ class tool_pluginkenobi_local_generator_testcase extends advanced_testcase {
     public function test_with_access() {
         $recipe = self::$baserecipe;
         $recipe['features'] = array(
-            'access' => array(
+            'capabilities' => array(
                 array(
                     'name' => 'view',
                     'captype' => 'read',

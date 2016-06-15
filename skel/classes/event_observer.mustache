@@ -1,0 +1,30 @@
+{{< ../boilerplate}}
+{{/ ../boilerplate}}
+
+namespace {{component}};
+defined('MOODLE_INTERNAL') || die();
+
+/**
+ * This is a one-line short description of the class.
+ *
+ * You can have a rather long description of the class as well,
+ * and it can span multiple lines.
+ *
+ * @package    {{component}}
+ * @copyright  {{year}} {{author.name}} {{author.email}}
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+class {{name}} {
+
+    /**
+     * Triggered via {{eventclassname}} event.
+     *
+     * @param {{eventname}} $event The event.
+     * @return bool True on success.
+     */
+    public static function {{function}}({{eventname}} $event) {
+        // For more information about the Events API, please visit:
+        // https://docs.moodle.org/dev/Event_2
+        return true;
+    }
+}

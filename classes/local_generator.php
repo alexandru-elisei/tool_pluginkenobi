@@ -45,7 +45,7 @@ class tool_pluginkenobi_local_generator extends tool_pluginkenobi_generator_base
         ),
 
         'settings'  => 'settings_generator',
-        'access' => 'db_access_generator'
+        'capabilities' => 'capabilities_generator'
     );
 
     /** @var string Default plugin location. */
