@@ -59,7 +59,7 @@ class tool_pluginkenobi_version_generator extends tool_pluginkenobi_generator_ba
             'requiredoptions'   => array('component', 'version', 'requires'),
             'optionaloptions'   => array('release', 'maturity', 'dependencies'),
             'files'             => array(
-                'skel/version' => 'version.php'
+                'version.php'   => array('template' => 'skel/version')
             )),
     );
 

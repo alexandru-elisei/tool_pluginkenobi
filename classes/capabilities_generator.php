@@ -43,7 +43,7 @@ class tool_pluginkenobi_capabilities_generator extends tool_pluginkenobi_generat
             'requiredoptions'   => array('name', 'captype', 'contextlevel', 'archetypes'),
             'optionaloptions'   => array('riskbitmask', 'clonepermissionsfrom'),
             'files'             => array(
-                'skel/db/access' => 'db/access.php'
+                'db/access.php' => array('template' => 'skel/db/access')
             )),
     );
 

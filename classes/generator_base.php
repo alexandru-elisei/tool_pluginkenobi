@@ -116,11 +116,18 @@ abstract class tool_pluginkenobi_generator_base {
         global $CFG;
 
         $targetpath = $this->prepare_target_path();
-        foreach ($this->outputfiles as $template => $outputfile) {
+        foreach ($this->outputfiles as $outputfile => $fileoptions) {
             // Preparing the location of the template file and the generated file.
+            $template = $fileoptions['template'];
             $templatepath = $CFG->dirroot . '/admin/tool/pluginkenobi/' . $template;
-            $contents = tool_pluginkenobi_template_processor::load($templatepath, $this->recipe);
             $outputfilepath = $this->prepare_file_path($targetpath, $outputfile);
+
+            if (!empty($fileoptions['recipe'])) {
+                $recipe = $fileoptions['recipe'];
+            } else {
+                $recipe = $this->recipe;
+            }
+            $contents = tool_pluginkenobi_template_processor::load($templatepath, $recipe);
 
             $filehandle = fopen($outputfilepath, 'w');
             fputs($filehandle, $contents);
@@ -252,8 +259,8 @@ abstract class tool_pluginkenobi_generator_base {
      */
     protected function add_feature_files($feature) {
         if (!empty($this->features[$feature]['files'])) {
-            foreach ($this->features[$feature]['files'] as $template => $outputfile) {
-                $this->outputfiles[$template] = $outputfile;
+            foreach ($this->features[$feature]['files'] as $outputfile => $fileoptions) {
+                $this->outputfiles[$outputfile]['template'] = $fileoptions['template'];
             }
         }
     }

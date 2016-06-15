@@ -42,7 +42,7 @@ class tool_pluginkenobi_settings_generator extends tool_pluginkenobi_generator_b
             'requiredoptions'   => array(),
             'optionaloptions'   => array(),
             'files'             => array(
-                'skel/settings' => 'settings.php'
+                'settings.php'  => array('template' => 'skel/settings')
             )),
     );
 }
