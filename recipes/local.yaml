@@ -1,0 +1,33 @@
+component: local_test
+name: Test
+release: "0.1"
+author:
+    name: Alexandru Elisei
+    email: alexandru.elisei@gmail.com
+version: 2016121200
+requires: "2.9"
+maturity: MATURITY_ALPHA
+features:
+    settings: true
+    capabilities:
+        - name: addinstance
+          captype: write
+          riskbitmask: RISK_XSS | RISK_CONFIG
+          contextlevel: CONTEXT_MODULE
+          archetypes:
+              - role: student
+                permission: CAP_PREVENT
+              - role: editingteacher
+                permission: CAP_ALLOW
+        - name: view
+          captype: read
+          contextlevel: CONTEXT_COURSE
+          archetypes:
+              - role: manager
+                permission: CAP_ALLOW
+    observers:
+        - eventname: "\core\event\something_happened"
+          callback: "\local_test\event_observer::something_happened"
+          priority: 200
+        - eventname: "\core\event\something_else_happened"
+          callback: "\local_test\another_event_observer::something_else_happened"
