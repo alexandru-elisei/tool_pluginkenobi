@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * File containing the local_generator class.
+ * File containing the uninstall_generator class.
  *
  * @package    tool_pluginkenobi
  * @copyright  2016 Alexandru Elisei
@@ -29,28 +29,30 @@ require_once(__DIR__ . '/generator_base.php');
 require_once(__DIR__ . '/processor.php');
 
 /**
- * Local_generator class.
+ * Uninstall_generator class.
  *
  * @package    tool_pluginkenobi
  * @copyright  2016 Alexandru Elisei
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class tool_pluginkenobi_local_generator extends tool_pluginkenobi_generator_base {
+class tool_pluginkenobi_uninstall_generator extends tool_pluginkenobi_generator_base {
     /** @var $string[] List of features that the plugin has. */
     protected $features = array(
-        'core'      => array(
+        'core'  => array(
             'requiredoptions'   => array(),
             'optionaloptions'   => array(),
-            'files'             => array(),
-        ),
-
-        'settings'  => 'settings_generator',
-        'capabilities' => 'capabilities_generator',
-        'observers' => 'observers_generator',
-        'events' => 'events_generator',
-        'uninstall' => 'uninstall_generator'
+            'files'             => array(
+                'db/uninstall.php'  => array('template' => 'skel/db/uninstall')
+            )),
     );
 
-    /** @var string Default plugin location. */
-    protected $defaultlocation = '/local';
+    /**
+     * Adds the plugin name to be used by the template.
+     *
+     * @param string[] $recipe The recipe.
+     */
+    protected function execute_additional_steps($recipe) {
+        list($unused, $plugin) = core_component::normalize_component($this->component);
+        $this->recipe['plugin'] = $plugin;
+    }
 }
