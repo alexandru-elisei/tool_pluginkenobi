@@ -191,4 +191,36 @@ class tool_pluginkenobi_local_generator_testcase extends advanced_testcase {
         $this->assertFileEquals($observerclass, self::$fixtures . '/classes/another_event_observer.php');
     }
 
+    /**
+     * Tests generating a local plugin type with the 'events' feature.
+     */
+    public function test_with_events() {
+        $recipe = self::$baserecipe;
+        $recipe['features'] = array(
+            'events' => array(
+                array(
+                    'eventname' => 'event_class',
+                    'extends'  => '\core\event\something_happened'
+                ),
+                array(
+                    'eventname' => 'another_event_class'
+                )
+            ));
+        $targetdir = make_request_directory();
+
+        $processor = new tool_pluginkenobi_processor($recipe, $targetdir);
+        $processor->generate();
+
+        $versionfile = $targetdir . '/localgeneratortest/version.php';
+        $this->assertFileEquals($versionfile, self::$fixtures . '/version.php');
+
+        $langfile = $targetdir . '/localgeneratortest/lang/en/local_localgeneratortest.php';
+        $this->assertFileEquals($langfile, self::$fixtures . '/lang/en/local_localgeneratortest.php');
+
+        $eventclass = $targetdir . '/localgeneratortest/classes/event/event_class.php';
+        $this->assertFileEquals($eventclass, self::$fixtures . '/classes/event/event_class.php');
+
+        $eventclass = $targetdir . '/localgeneratortest/classes/event/another_event_class.php';
+        $this->assertFileEquals($eventclass, self::$fixtures . '/classes/event/another_event_class.php');
+    }
 }
