@@ -1,0 +1,24 @@
+{{< ../boilerplate}}
+{{/ ../boilerplate}}
+
+// For more information about the Events API, please visit:
+// https://docs.moodle.org/dev/Event_2
+
+defined('MOODLE_INTERNAL') || die();
+
+$observers = array(
+    {{# features.observers}}
+
+    'eventname' => '{{eventname}}',
+    'callback' => '{{callback}}',
+    {{# includefile}}
+    'includefile' => {{includefile}},
+    {{/ includefile}}
+    {{# priority}}
+    'priority' => {{priority}},
+    {{/ priority}}
+    {{# internal}}
+    'internal' => {{internal}}
+    {{/ internal}}
+    {{/ features.observers}}
+);

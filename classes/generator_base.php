@@ -218,6 +218,12 @@ abstract class tool_pluginkenobi_generator_base {
         list($unused, $plugin) = core_component::normalize_component($this->component);
         $targetpath = $this->targetdir . '/' . $plugin;
 
+        /*
+        if (file_exists($targetpath)) {
+            throw new moodle_exception('Target directory "' . $targetpath . '" already exists');
+        }
+         */
+
         if (!file_exists($targetpath)) {
             $result = mkdir($targetpath, 0755, true);
             if ($result === false) {

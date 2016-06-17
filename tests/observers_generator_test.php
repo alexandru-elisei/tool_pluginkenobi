@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * File containing the tests for the capabilities_generator class.
+ * File containing the tests for the observers_generator class.
  *
  * @package    tool_pluginkenobi
  * @copyright  2016 Alexandru Elisei alexandru.elisei@gmail.com
@@ -28,18 +28,18 @@ global $CFG;
 require_once($CFG->libdir . '/setuplib.php');
 
 /**
- * capabilities_generator test class.
+ * Observers_generator test class.
  *
  * @package    tool_pluginkenobi
  * @copyright  2016 Alexandru Elisei alexandru.elisei@gmail.com
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class tool_pluginkenobi_capabilities_generator_testcase extends advanced_testcase {
+class tool_pluginkenobi_observers_generator_testcase extends advanced_testcase {
 
     /** @var string[] Basic recipe. */
     protected static $baserecipe = array(
-        'component' => 'capabilitiesgeneratortest',
-        'name'      => 'capabilities_generator test',
+        'component' => 'observersgeneratortest',
+        'name'      => 'observers_generator test',
         'release'  => '0.1',
         'author'    => array(
             'name'  => 'Alexandru Elisei',
@@ -50,21 +50,16 @@ class tool_pluginkenobi_capabilities_generator_testcase extends advanced_testcas
         'requires'  => '2.9',
         'maturity'  => 'MATURITY_ALPHA',
         'features'  => array(
-            'capabilities' => array(
+            'observers' => array(
                 array(
-                    'name' => 'view',
-                    'captype' => 'read',
-                    'contextlevel' => 'CONTEXT_MODULE',
-                    'archetypes' => array(
-                        array('role' => 'student', 'permission' => 'CAP_ALLOW'),
-                        array('role' => 'editingteacher', 'permission' => 'CAP_ALLOW'))),
+                    'eventname' => '\core\event\something_happened',
+                    'callback'  => '\observersgeneratortest\event_observer::something_happened',
+                    'priority'  => 200,
+                ),
                 array(
-                    'name' => 'addinstance',
-                    'riskbitmask' => 'RISK_XSS | RISK_CONFIG',
-                    'captype' => 'write',
-                    'contextlevel' => 'CONTEXT_COURSE',
-                    'archetypes' => array(
-                        array('role' => 'manager', 'permission' => 'CAP_ALLOW')))
+                    'eventname' => '\core\event\something_else_happened',
+                    'callback'  => '\observersgeneratortest\another_event_observer::something_else_happened',
+                )
             )
         )
     );
@@ -78,7 +73,7 @@ class tool_pluginkenobi_capabilities_generator_testcase extends advanced_testcas
     public static function setUpBeforeClass() {
         global $CFG;
 
-        self::$fixtures = $CFG->dirroot . '/admin/tool/pluginkenobi/tests/fixtures/capabilities_generator';
+        self::$fixtures = $CFG->dirroot . '/admin/tool/pluginkenobi/tests/fixtures/observers_generator';
     }
 
     /**
@@ -89,14 +84,14 @@ class tool_pluginkenobi_capabilities_generator_testcase extends advanced_testcas
     }
 
     /**
-     * Tests a recipe with missing capabilities.
+     * Tests a recipe with missing observers.
      */
-    public function test_missing_capabilities() {
+    public function test_missing_observers() {
         $recipe = self::$baserecipe;
-        unset($recipe['features']['capabilities']);
+        unset($recipe['features']['observers']);
 
         $this->setExpectedException('moodle_exception');
-        $generator = new tool_pluginkenobi_capabilities_generator($recipe, '');
+        $generator = new tool_pluginkenobi_observers_generator($recipe, '');
 
 
     }
@@ -104,58 +99,53 @@ class tool_pluginkenobi_capabilities_generator_testcase extends advanced_testcas
     /**
      * Tests a recipe with missing fields.
      */
-    public function test_missing_captype() {
+    public function test_missing_eventname() {
         $recipe = self::$baserecipe;
-        unset($recipe['features']['capabilities'][0]['captype']);
+        unset($recipe['features']['observers'][0]['eventname']);
 
         $this->setExpectedException('moodle_exception');
-        $generator = new tool_pluginkenobi_capabilities_generator($recipe, '');
-    }
-
-    /**
-     * Tests a recipe with missing fields.
-     */
-    public function test_missing_archetypes() {
-        $recipe = self::$baserecipe;
-        unset($recipe['features']['capabilities'][1]['archetypes']);
-
-        $this->setExpectedException('moodle_exception');
-        $generator = new tool_pluginkenobi_capabilities_generator($recipe, '');
+        $generator = new tool_pluginkenobi_observers_generator($recipe, '');
     }
 
      /**
      * Tests a recipe with invalid values.
      */
-    public function test_invalid_riskbitmask() {
+    public function test_invalid_eventname() {
         $recipe = self::$baserecipe;
-        $recipe['features']['capabilities'][0]['captype'] = 'invalid';
+        $recipe['features']['observers'][0]['eventname'] = 'not_a_valid_namespace';
 
         $this->setExpectedException('moodle_exception');
-        $generator = new tool_pluginkenobi_capabilities_generator($recipe, '');
+        $generator = new tool_pluginkenobi_observers_generator($recipe, '');
     }
 
      /**
      * Tests a recipe with invalid values.
      */
-    public function test_invalid_archetype_permission() {
+    public function test_invalid_callback() {
         $recipe = self::$baserecipe;
-        $recipe['features']['capabilities'][0]['archetypes'][0]['permission'] = 'invalid';
+        $recipe['features']['observers'][0]['callback'] = '\namespace\not_a_valid_static_function';
 
         $this->setExpectedException('moodle_exception');
-        $generator = new tool_pluginkenobi_capabilities_generator($recipe, '');
+        $generator = new tool_pluginkenobi_observers_generator($recipe, '');
     }
 
     /**
-     * Tests generating a db/access.php file.
+     * Tests generating the files needed for the observers.
      */
-    public function test_generate_file() {
+    public function test_generate_files() {
         $recipe = self::$baserecipe;
         $targetdir = make_request_directory();
 
-        $generator = new tool_pluginkenobi_capabilities_generator($recipe, $targetdir);
+        $generator = new tool_pluginkenobi_observers_generator($recipe, $targetdir);
         $generator->generate_files();
 
-        $dbaccessfile = $targetdir . '/capabilitiesgeneratortest/db/access.php';
-        $this->assertFileEquals($dbaccessfile, self::$fixtures . '/access.php');
+        $eventsfile = $targetdir . '/observersgeneratortest/db/events.php';
+        $this->assertFileEquals($eventsfile, self::$fixtures . '/db/events.php');
+
+        $observerclass = $targetdir . '/observersgeneratortest/classes/event_observer.php';
+        $this->assertFileEquals($observerclass, self::$fixtures . '/classes/event_observer.php');
+
+        $observerclass = $targetdir . '/observersgeneratortest/classes/another_event_observer.php';
+        $this->assertFileEquals($observerclass, self::$fixtures . '/classes/another_event_observer.php');
     }
 }

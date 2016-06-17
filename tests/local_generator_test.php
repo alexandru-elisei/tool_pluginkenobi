@@ -153,5 +153,4 @@ class tool_pluginkenobi_local_generator_testcase extends advanced_testcase {
         $dbaccessfile = $targetdir . '/localgeneratortest/db/access.php';
         $this->assertFileEquals($dbaccessfile, self::$fixtures . '/db/access.php');
     }
-
 }
