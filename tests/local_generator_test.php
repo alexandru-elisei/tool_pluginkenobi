@@ -153,4 +153,42 @@ class tool_pluginkenobi_local_generator_testcase extends advanced_testcase {
         $dbaccessfile = $targetdir . '/localgeneratortest/db/access.php';
         $this->assertFileEquals($dbaccessfile, self::$fixtures . '/db/access.php');
     }
+
+    /**
+     * Tests generating a local plugin type with the 'observers' feature.
+     */
+    public function test_with_observers() {
+        $recipe = self::$baserecipe;
+        $recipe['features'] = array(
+            'observers' => array(
+                array(
+                    'eventname' => '\core\event\something_happened',
+                    'callback'  => '\local_localgeneratortest\event_observer::something_happened',
+                    'priority'  => 200,
+                ),
+                array(
+                    'eventname' => '\core\event\something_else_happened',
+                    'callback'  => '\local_localgeneratortest\another_event_observer::something_else_happened',
+            )));
+        $targetdir = make_request_directory();
+
+        $processor = new tool_pluginkenobi_processor($recipe, $targetdir);
+        $processor->generate();
+
+        $versionfile = $targetdir . '/localgeneratortest/version.php';
+        $this->assertFileEquals($versionfile, self::$fixtures . '/version.php');
+
+        $langfile = $targetdir . '/localgeneratortest/lang/en/local_localgeneratortest.php';
+        $this->assertFileEquals($langfile, self::$fixtures . '/lang/en/local_localgeneratortest.php');
+
+        $eventsfile = $targetdir . '/localgeneratortest/db/events.php';
+        $this->assertFileEquals($eventsfile, self::$fixtures . '/db/events.php');
+
+        $observerclass = $targetdir . '/localgeneratortest/classes/event_observer.php';
+        $this->assertFileEquals($observerclass, self::$fixtures . '/classes/event_observer.php');
+
+        $observerclass = $targetdir . '/localgeneratortest/classes/another_event_observer.php';
+        $this->assertFileEquals($observerclass, self::$fixtures . '/classes/another_event_observer.php');
+    }
+
 }
