@@ -223,4 +223,25 @@ class tool_pluginkenobi_local_generator_testcase extends advanced_testcase {
         $eventclass = $targetdir . '/localgeneratortest/classes/event/another_event_class.php';
         $this->assertFileEquals($eventclass, self::$fixtures . '/classes/event/another_event_class.php');
     }
+
+    /**
+     * Tests generating a local pluginwith the 'uninstall' feature.
+     */
+    public function test_with_uninstall() {
+        $recipe = self::$baserecipe;
+        $recipe['features'] = array('uninstall' => true);
+        $targetdir = make_request_directory();
+
+        $processor = new tool_pluginkenobi_processor($recipe, $targetdir);
+        $processor->generate();
+
+        $versionfile = $targetdir . '/localgeneratortest/version.php';
+        $this->assertFileEquals($versionfile, self::$fixtures . '/version.php');
+
+        $langfile = $targetdir . '/localgeneratortest/lang/en/local_localgeneratortest.php';
+        $this->assertFileEquals($langfile, self::$fixtures . '/lang/en/local_localgeneratortest.php');
+
+        $uninstallfile = $targetdir . '/localgeneratortest/db/uninstall.php';
+        $this->assertFileEquals($uninstallfile, self::$fixtures . '/db/uninstall.php');
+    }
 }
