@@ -225,7 +225,7 @@ class tool_pluginkenobi_local_generator_testcase extends advanced_testcase {
     }
 
     /**
-     * Tests generating a local pluginwith the 'uninstall' feature.
+     * Tests generating a local plugin with the 'uninstall' feature.
      */
     public function test_with_uninstall() {
         $recipe = self::$baserecipe;
@@ -243,5 +243,26 @@ class tool_pluginkenobi_local_generator_testcase extends advanced_testcase {
 
         $uninstallfile = $targetdir . '/localgeneratortest/db/uninstall.php';
         $this->assertFileEquals($uninstallfile, self::$fixtures . '/db/uninstall.php');
+    }
+
+    /**
+     * Tests generating a local plugin with the 'install' feature.
+     */
+    public function test_with_install() {
+        $recipe = self::$baserecipe;
+        $recipe['features'] = array('install' => true);
+        $targetdir = make_request_directory();
+
+        $processor = new tool_pluginkenobi_processor($recipe, $targetdir);
+        $processor->generate();
+
+        $versionfile = $targetdir . '/localgeneratortest/version.php';
+        $this->assertFileEquals($versionfile, self::$fixtures . '/version.php');
+
+        $langfile = $targetdir . '/localgeneratortest/lang/en/local_localgeneratortest.php';
+        $this->assertFileEquals($langfile, self::$fixtures . '/lang/en/local_localgeneratortest.php');
+
+        $installfile = $targetdir . '/localgeneratortest/db/install.php';
+        $this->assertFileEquals($installfile, self::$fixtures . '/db/install.php');
     }
 }
