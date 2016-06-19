@@ -69,31 +69,14 @@ abstract class tool_pluginkenobi_generator_base {
         $this->recipe['author']['name'] = $recipe['author']['name'];
         $this->recipe['author']['email'] = $recipe['author']['email'];
         $this->component = $recipe['component'];
-        $this->targetdir = empty($targetdir) ? ($CFG->dirroot . '/' . $this->defaultlocation) : $targetdir;
+        $this->set_target_directory($targetdir);
 
         // Adding the boilerplate variables.
         foreach (tool_pluginkenobi_processor::$boilerplateoptions as $option) {
             $this->recipe[$option] = $recipe[$option];
         }
 
-        // Core features will always be generated.
-        $requestedfeatures = array('core');
-        if (!empty($recipe['features']) && is_array($recipe['features'])) {
-            if (!empty($recipe['features']['all'])) {
-                    foreach ($this->features as $feature => $notused) {
-                        if ($feature !== 'core') {
-                            $requestedfeatures[] = $feature;
-                        }
-                    }
-            } else {
-                foreach ($this->features as $feature => $notused) {
-                    if (!empty($recipe['features'][$feature])) {
-                        $requestedfeatures[] = $feature;
-                    }
-                }
-            }
-        }
-
+        $requestedfeatures = $this->get_requested_features($recipe);
         foreach ($requestedfeatures as $feature) {
             if (is_array($this->features[$feature])) {
                 $this->process_feature_options($feature, $recipe);
@@ -115,12 +98,12 @@ abstract class tool_pluginkenobi_generator_base {
     public function generate_files() {
         global $CFG;
 
-        $targetpath = $this->prepare_target_path();
+        $pluginpath = $this->prepare_plugin_path();
         foreach ($this->outputfiles as $outputfile => $fileoptions) {
             // Preparing the location of the template file and the generated file.
             $template = $fileoptions['template'];
             $templatepath = $CFG->dirroot . '/admin/tool/pluginkenobi/' . $template;
-            $outputfilepath = $this->prepare_file_path($targetpath, $outputfile);
+            $outputfilepath = $this->prepare_file_path($pluginpath, $outputfile);
 
             if (!empty($fileoptions['recipe'])) {
                 $recipe = $fileoptions['recipe'];
@@ -140,37 +123,93 @@ abstract class tool_pluginkenobi_generator_base {
     }
 
     /**
-     * Extracts and validates the options needed for the feature.
+     * Returns the array of features requested in the recipe.
      *
-     * @throws moodle_exception
-     * @param string $feature The feature name.
-     * @param string[] $recipe The plugin recipe.
+     * @param string[] $recipe The recipe.
+     * @return string[] The requested features.
      */
-    protected function process_feature_options($feature, $recipe) {
-        $required = $this->validate_options($recipe, $this->features[$feature]['requiredoptions'], true);
-        if (!empty($required)) {
-            foreach ($required as $option => $value) {
-                $this->recipe[$option] = $value;
+    protected function get_requested_features($recipe) {
+        // Core generator components will always be generated.
+        $requestedfeatures = array('core');
+        if (!empty($recipe['features']) && is_array($recipe['features'])) {
+            if (!empty($recipe['features']['all'])) {
+                foreach ($this->features as $feature => $notused) {
+                    if ($feature !== 'core') {
+                        $requestedfeatures[] = $feature;
+                    }
+                }
+            } else {
+                foreach ($this->features as $feature => $notused) {
+                    if (!empty($recipe['features'][$feature])) {
+                        $requestedfeatures[] = $feature;
+                    }
+                }
             }
         }
 
-        $optional = $this->validate_options($recipe, $this->features[$feature]['optionaloptions']);
-        if (!empty($optional)) {
-            foreach ($optional as $option => $value) {
-                $this->recipe[$option] = $value;
+        return $requestedfeatures;
+    }
+
+    /**
+     * Returns the directory where the plugin will be created.
+     *
+     * This directory does not include the plugin name.
+     *
+     * @return string The target directory.
+     */
+    public function get_target_directory() {
+        return $this->targetdir;
+    }
+
+    /**
+     * Sets the value for the target directory based on the user input or default plugin location.
+     *
+     * @param string $targetdir The user supplied target directory.
+     * @return string The target directory.
+     */
+    protected function set_target_directory($targetdir) {
+        global $CFG;
+
+        $defaultlocationpath = $CFG->dirroot . '/' . $this->defaultlocation;
+        $this->targetdir = empty($targetdir) ? $defaultlocationpath : $targetdir;
+    }
+
+    /**
+     * Prepares the path to the directory where the plugin's files will be generated.
+     * All the subdirectories on the path will be generated.
+     *
+     * @param string $targetdir The directory specified by the user.
+     * @param string $component The component name.
+     */
+    protected function prepare_plugin_path() {
+        list($unused, $plugin) = core_component::normalize_component($this->component);
+        $pluginpath = $this->targetdir . '/' . $plugin;
+
+        /*
+        if (file_exists($pluginpath)) {
+            throw new moodle_exception('Target directory "' . $pluginpath . '" already exists');
+        }
+         */
+
+        if (!file_exists($pluginpath)) {
+            $result = mkdir($pluginpath, 0755, true);
+            if ($result === false) {
+                throw new moodle_exception('Cannot create directory "' . $pluginpath . '"');
             }
         }
+
+        return $pluginpath;
     }
 
     /**
      * Prepares the location of a file by creating all the necessary subdirectories.
      *
-     * @param string $targetpath The target path for the plugin.
+     * @param string $pluginpath The target path for the plugin.
      * @param string $filepath The file path.
      * @return string The prepared path.
      */
-    protected function prepare_file_path($targetpath, $filepath) {
-        $outputfilepath = $targetpath . '/' . $filepath;
+    protected function prepare_file_path($pluginpath, $filepath) {
+        $outputfilepath = $pluginpath . '/' . $filepath;
         if (file_exists($outputfilepath)) {
             throw new moodle_exception('File "' . $outputfilepath . '" already exists');
         } else {
@@ -188,15 +227,75 @@ abstract class tool_pluginkenobi_generator_base {
     }
 
     /**
-     * Returns the directory where the plugin will be created.
-     * This directory does not include the plugin name.
+     * Extracts and validates the options needed for the feature.
      *
-     * @return string The target directory.
+     * @throws moodle_exception
+     * @param string $feature The feature name.
+     * @param string[] $recipe The plugin recipe.
      */
-    public function get_target_directory() {
-        return $this->targetdir;
+    protected function process_feature_options($feature, $recipe) {
+        $options = $this->get_feature_options($feature, $recipe);
+        $expected = $this->features[$feature]['requiredoptions'];
+        $required = $this->validate_options($options, $expected, true);
+        if (!empty($required)) {
+            foreach ($required as $option => $value) {
+                $this->recipe[$option] = $value;
+            }
+        }
+
+        $expected = $this->features[$feature]['optionaloptions'];
+        $optional = $this->validate_options($options, $expected);
+        if (!empty($optional)) {
+            foreach ($optional as $option => $value) {
+                $this->recipe[$option] = $value;
+            }
+        }
     }
 
+    /**
+     * Returns a list of the options specified in the recipe for $feature.
+     *
+     * @param string $feature
+     * @param string[] $recipe
+     */
+    protected function get_feature_options($feature, $recipe) {
+        if ($feature === 'core') {
+            return $recipe;
+        } else {
+            return $recipe['features'][$feature];
+        }
+    }
+
+    /**
+     * Validates the recipe by verifying if the specified options are present.
+     *
+     * @param string[] $options The options from the recipe.
+     * @param string[] $expected The options to validate against.
+     * @param bool $mustexist If the options must exist in the recipe in order to pass validation.
+     * @return string[] The validated options.
+     */
+    protected function validate_options($options, $expected, $mustexist = false) {
+        // If the options from the recipe are a value, then return an empty array of options.
+        // This happens when the feature has no options associated with it.
+        if (!is_array($options)) {
+            return array();
+        }
+
+        $validated = array();
+        foreach ($expected as $option) {
+            if ($mustexist && empty($options[$option])) {
+                throw new moodle_exception('Required option "' . $option . '" missing');
+            }
+
+            if (!empty($options[$option])) {
+                $value = $this->validate_value($option, $options[$option]);
+                $validated[$option] = $value;
+            }
+        }
+
+        return $validated;
+    }
+    
     /**
      * Checks if a given option is valid.
      *
@@ -205,57 +304,6 @@ abstract class tool_pluginkenobi_generator_base {
      */
     protected function validate_value($option, $value) {
         return $value;
-    }
-
-    /**
-     * Prepares the path to the directory where the plugin's files will be generated.
-     * All the subdirectories on the path will be generated.
-     *
-     * @param string $targetdir The directory specified by the user.
-     * @param string $component The component name.
-     */
-    protected function prepare_target_path() {
-        list($unused, $plugin) = core_component::normalize_component($this->component);
-        $targetpath = $this->targetdir . '/' . $plugin;
-
-        /*
-        if (file_exists($targetpath)) {
-            throw new moodle_exception('Target directory "' . $targetpath . '" already exists');
-        }
-         */
-
-        if (!file_exists($targetpath)) {
-            $result = mkdir($targetpath, 0755, true);
-            if ($result === false) {
-                throw new moodle_exception('Cannot create directory "' . $targetpath . '"');
-            }
-        }
-
-        return $targetpath;
-    }
-
-    /**
-     * Validates the recipe by verifying if the specified options are present.
-     *
-     * @param string[] $recipe The recipe.
-     * @param string[] $options The options to validate against.
-     * @param bool $mustexist If the options must exist in the recipe in order to pass validation.
-     * @return string[] The validated options.
-     */
-    protected function validate_options($recipe, $options, $mustexist = false) {
-        $validated = array();
-        foreach ($options as $option) {
-            if ($mustexist && empty($recipe[$option])) {
-                throw new moodle_exception('Required options "' . $option . '" missing');
-            }
-
-            if (!empty($recipe[$option])) {
-                $value = $this->validate_value($option, $recipe[$option]);
-                $validated[$option] = $value;
-            }
-        }
-
-        return $validated;
     }
 
     /**

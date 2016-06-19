@@ -61,67 +61,63 @@ class tool_pluginkenobi_capabilities_generator extends tool_pluginkenobi_generat
     protected $permissions = array('CAP_ALLOW', 'CAP_PREVENT');
 
     /**
-     * Extracts and validates the options needed for the feature.
+     * Sets the value for the target directory based on the argument passed to the constructor.
+     *
+     * @param string $targetdir The supplied target directory.
+     * @return string The target directory.
+     */
+    protected function set_target_directory($targetdir) {
+        $this->targetdir = $targetdir;
+    }
+
+    /**
+     * Returns an array of features requested in the recipe.
+     *
+     * Helper generators only have the 'core' feature.
+     *
+     * @param string[] $recipe The recipe.
+     * @return string[] The requested features.
+     */
+    protected function get_requested_features($recipe) {
+        return array('core');
+    }
+
+    /**
+     * Extracts and validates the options needed for the core feature.
      *
      * @throws moodle_exception
      * @param string $feature The feature name.
      * @param string[] $recipe The plugin recipe.
      */
     protected function process_feature_options($feature, $recipe) {
-        if ($feature === 'core') {
-            if (empty($recipe['features']['capabilities']) || !is_array($recipe['features']['capabilities'])) {
-                throw new moodle_exception('Missing or invalid feature "capabilities"');
+        if (empty($recipe['features']['capabilities']) || !is_array($recipe['features']['capabilities'])) {
+            throw new moodle_exception('Missing or invalid feature "capabilities"');
+        }
+
+        $options = $this->get_feature_options($feature, $recipe);
+        foreach ($options as $key => $capability) {
+            $expected = $this->features['core']['requiredoptions'];
+            $required = $this->validate_options($capability, $expected, true);
+            foreach ($required as $k => $v) {
+                $this->recipe['features']['capabilities'][$key][$k] = $v;
             }
 
-            foreach ($recipe['features']['capabilities'] as $key => $capability) {
-                $capability = $this->validate_capability($capability);
-                $this->recipe['features']['capabilities'][$key] = $capability;
+            $expected = $this->features['core']['optionaloptions'];
+            $optional = $this->validate_options($capability, $expected);
+            foreach ($optional as $option => $value) {
+                $this->recipe['features']['capabilities'][$key][$option] = $value;
             }
-        } else {
-            parent::process_feature_options($feature, $recipe);
         }
     }
 
     /**
-     * Validates the options for a capability.
+     * Returns the capabilities specified in the recipe.
      *
-     * @throws moodle_exception
-     * @param string[] $capability The capability to be validated.
+     * @param string $feature
+     * @param string[] $recipe
      */
-    protected function validate_capability($capability) {
-        $ret = array();
-        foreach ($this->features['core']['requiredoptions'] as $option) {
-            if (empty($capability[$option])) {
-                throw new moodle_exception('Missing required option "' . $option . '"');
-            }
-
-            // Validating each of the archetypes.
-            if ($option === 'archetypes' && !empty($capability['archetypes'])) {
-                if (!is_array($capability['archetypes'])) {
-                    throw new moodle_exception('Invalid format for capability archetypes');
-                }
-                $ret['archetypes'] = array();
-                foreach ($capability['archetypes'] as $key => $archetype) {
-                    $role = $this->validate_value('role', $archetype['role']);
-                    $permission = $this->validate_value('permission', $archetype['permission']);
-                    $ret['archetypes'][$key] = array(
-                        'role' => $role,
-                        'permission' => $permission
-                    );
-                }
-            } else {
-                $ret[$option] = $this->validate_value($option, $capability[$option]);
-            }
-        }
-
-        foreach($this->features['core']['optionaloptions'] as $option) {
-           if (!empty($capability[$option])) {
-                $value = $this->validate_value($option, $capability[$option]);
-                $ret[$option] = $value;
-            }
-        }
-
-        return $ret;
+    protected function get_feature_options($feature, $recipe) {
+        return $recipe['features']['capabilities'];
     }
 
     /**
@@ -131,7 +127,22 @@ class tool_pluginkenobi_capabilities_generator extends tool_pluginkenobi_generat
      * @return string | null The validated option value or null if it's not a valid value.
      */
     protected function validate_value($option, $value) {
-        if ($option === 'riskbitmask') {
+        if ($option === 'archetypes') {
+            if (!is_array($value)) {
+                throw new moodle_exception('Invalid format for capability archetypes');
+            }
+
+            $ret = array();
+            foreach ($value as $key => $archetype) {
+                $role = $this->validate_value('role', $archetype['role']);
+                $permission = $this->validate_value('permission', $archetype['permission']);
+                $ret[$key] = array(
+                    'role' => $role,
+                    'permission' => $permission
+                );
+            }
+            return $ret;
+        } else if ($option === 'riskbitmask') {
             $riskbitmasks = explode('|', $value);
             $ret = array();
             foreach ($riskbitmasks as $riskbitmask) {
@@ -158,9 +169,9 @@ class tool_pluginkenobi_capabilities_generator extends tool_pluginkenobi_generat
                 throw new moodle_exception('Unknown permission "' . $value . '"');
             }
             return $value;
+        } else {
+            return parent::validate_value($option, $value);
         }
-
-        return parent::validate_value($option, $value);
     }
 
     /**
