@@ -49,7 +49,8 @@ class tool_pluginkenobi_local_generator extends tool_pluginkenobi_generator_base
         'observers' => 'observers_generator',
         'events' => 'events_generator',
         'uninstall' => 'uninstall_generator',
-        'install' => 'install_generator'
+        'install' => 'install_generator',
+        'upgrade' => 'upgrade_generator'
     );
 
     /** @var string Default plugin location. */
