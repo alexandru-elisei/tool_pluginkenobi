@@ -137,6 +137,9 @@ class tool_pluginkenobi_local_generator_testcase extends advanced_testcase {
             'upgrade' => array(
                 'upgradelib' => true
             ),
+            'lib' => array(
+                'supports' => array('FEATURE_MOD_INTRO', 'FEATURE_BACKUP_MOODLE2')
+            ),
         );
         $targetdir = make_request_directory();
 
@@ -181,5 +184,8 @@ class tool_pluginkenobi_local_generator_testcase extends advanced_testcase {
 
         $upgradelibfile = $targetdir . '/localgeneratortest/db/upgradelib.php';
         $this->assertFileEquals(self::$fixtures . '/db/upgradelib.php', $upgradelibfile);
+
+        $libfile = $targetdir . '/localgeneratortest/lib.php';
+        $this->assertFileEquals(self::$fixtures . '/lib.php', $libfile);
     }
 }
