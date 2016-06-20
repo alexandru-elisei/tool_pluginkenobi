@@ -35,4 +35,7 @@ features:
         - eventname: "event_class"
           extends: "\core\event\something_happened"
         - eventname: "another_event_class"
+    uninstall: true
+    upgrade:
+        upgradelib: true
 
