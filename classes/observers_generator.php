@@ -36,7 +36,7 @@ require_once(__DIR__ . '/processor.php');
  * @copyright  2016 Alexandru Elisei
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class tool_pluginkenobi_observers_generator extends tool_pluginkenobi_generator_base {
+class tool_pluginkenobi_observers_generator extends tool_pluginkenobi_helper_generator_base {
     /** @var string[] The plugin features. */
     protected $features = array(
         'core'  => array(
@@ -47,51 +47,35 @@ class tool_pluginkenobi_observers_generator extends tool_pluginkenobi_generator_
             )),
     );
 
+    /** @var string What feature the helper generator is implementing. */
+    protected $implementedfeature = 'observers';
+
     /**
-     * Extracts and validates the options needed for the feature.
+     * Extracts and validates the options needed for the core feature.
      *
      * @throws moodle_exception
      * @param string $feature The feature name.
      * @param string[] $recipe The plugin recipe.
      */
     protected function process_feature_options($feature, $recipe) {
-        if ($feature === 'core') {
-            if (empty($recipe['features']['observers']) || !is_array($recipe['features']['observers'])) {
-                throw new moodle_exception('Missing or invalid feature "observers"');
-            }
-
-            foreach ($recipe['features']['observers'] as $key => $observer) {
-                $observer = $this->validate_observer($observer);
-                $this->recipe['features']['observers'][$key] = $observer;
-            }
-        } else {
-            parent::process_feature_options($feature, $recipe);
-        }
-    }
-
-    /**
-     * Validates the options for an observer.
-     *
-     * @throws moodle_exception
-     * @param string[] $observer The observer to be validated.
-     */
-    protected function validate_observer($observer) {
-        $ret = array();
-        foreach ($this->features['core']['requiredoptions'] as $option) {
-            if (empty($observer[$option])) {
-                throw new moodle_exception('Missing required option "' . $option . '"');
-            }
-            $ret[$option] = $this->validate_value($option, $observer[$option]);
+        if (empty($recipe['features']['observers']) || !is_array($recipe['features']['observers'])) {
+            throw new moodle_exception('Missing or invalid feature "observers"');
         }
 
-        foreach($this->features['core']['optionaloptions'] as $option) {
-           if (!empty($observer[$option])) {
-                $value = $this->validate_value($option, $observer[$option]);
-                $ret[$option] = $value;
+        $options = $this->get_feature_options($feature, $recipe);
+        foreach ($options as $key => $observer) {
+            $expected = $this->features['core']['requiredoptions'];
+            $required = $this->validate_options($observer, $expected, true);
+            foreach ($required as $option => $value) {
+                $this->recipe['features']['observers'][$key][$option] = $value;
+            }
+
+            $expected = $this->features['core']['optionaloptions'];
+            $optional = $this->validate_options($observer, $expected);
+            foreach ($optional as $option => $value) {
+                $this->recipe['features']['observers'][$key][$option] = $value;
             }
         }
-
-        return $ret;
     }
 
     /**
@@ -147,21 +131,21 @@ class tool_pluginkenobi_observers_generator extends tool_pluginkenobi_generator_
     protected function execute_additional_steps($recipe) {
         foreach ($this->recipe['features']['observers'] as $observer) {
             $filerecipe = $this->recipe;
-            unset($filerecipe['features']);
+            $filerecipe['features'] = array();
 
-            $filerecipe['eventname'] = trim($observer['eventname'], '"\'');
+            $filerecipe['features']['observers']['eventname'] = trim($observer['eventname'], '"\'');
             $eventnamespace = explode('\\', $observer['eventname']);
             if (!is_array($eventnamespace)) {
                 throw new moodle_exception('Invalid value for eventname');
             }
-            $filerecipe['eventclassname'] = end($eventnamespace);
+            $filerecipe['features']['observers']['eventclassname'] = end($eventnamespace);
 
             $callback = trim($observer['callback'], '"\'');
             $observernamespace = explode('\\', $callback);
             $namefunction = end($observernamespace);
             list($name, $function) = explode('::', $namefunction, 2);
-            $filerecipe['name'] = $name;
-            $filerecipe['function'] = $function;
+            $filerecipe['features']['observers']['name'] = $name;
+            $filerecipe['features']['observers']['function'] = $function;
 
             $outputfile = 'classes/' . $name . '.php';
             $this->outputfiles[$outputfile] = array(

@@ -45,6 +45,9 @@ class tool_pluginkenobi_install_generator_testcase extends advanced_testcase {
             'name'  => 'Alexandru Elisei',
             'email' => 'alexandru.elisei@gmail.com'
         ),
+        'features'  => array(
+            'install' => true
+        ),
     );
 
     /** @var string Fixture locations. */

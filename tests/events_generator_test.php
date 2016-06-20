@@ -127,9 +127,9 @@ class tool_pluginkenobi_events_generator_testcase extends advanced_testcase {
         $generator->generate_files();
 
         $eventclass = $targetdir . '/eventsgeneratortest/classes/event/event_class.php';
-        $this->assertFileEquals($eventclass, self::$fixtures . '/classes/event/event_class.php');
+        $this->assertFileEquals(self::$fixtures . '/classes/event/event_class.php', $eventclass);
 
         $eventclass = $targetdir . '/eventsgeneratortest/classes/event/another_event_class.php';
-        $this->assertFileEquals($eventclass, self::$fixtures . '/classes/event/another_event_class.php');
+        $this->assertFileEquals(self::$fixtures . '/classes/event/another_event_class.php', $eventclass);
     }
 }

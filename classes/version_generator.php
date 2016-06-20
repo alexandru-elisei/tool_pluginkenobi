@@ -75,12 +75,10 @@ class tool_pluginkenobi_version_generator extends tool_pluginkenobi_generator_ba
                 throw new moodle_exception('Unknown version number "' . $value . '"');
             }
             return $this->moodleversions[$value];
-        }
-
-        if ($option == 'maturity' && !in_array($value, $this->maturitylevels)) {
+        } else if ($option == 'maturity' && !in_array($value, $this->maturitylevels)) {
             throw new moodle_exception('Unknown maturity level "' . $value . '"');
+        } else {
+            return $value;
         }
-
-        return $value;
     }
 }

@@ -35,7 +35,7 @@ require_once(__DIR__ . '/processor.php');
  * @copyright  2016 Alexandru Elisei
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class tool_pluginkenobi_install_generator extends tool_pluginkenobi_generator_base {
+class tool_pluginkenobi_install_generator extends tool_pluginkenobi_helper_generator_base {
     /** @var $string[] List of features that the plugin has. */
     protected $features = array(
         'core'  => array(
@@ -45,4 +45,7 @@ class tool_pluginkenobi_install_generator extends tool_pluginkenobi_generator_ba
                 'db/install.php'  => array('template' => 'skel/db/install')
             )),
     );
+
+    /** @var string What feature the helper generator is implementing. */
+    protected $implementedfeature = 'install';
 }

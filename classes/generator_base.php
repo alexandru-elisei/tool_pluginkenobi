@@ -185,12 +185,6 @@ abstract class tool_pluginkenobi_generator_base {
         list($unused, $plugin) = core_component::normalize_component($this->component);
         $pluginpath = $this->targetdir . '/' . $plugin;
 
-        /*
-        if (file_exists($pluginpath)) {
-            throw new moodle_exception('Target directory "' . $pluginpath . '" already exists');
-        }
-         */
-
         if (!file_exists($pluginpath)) {
             $result = mkdir($pluginpath, 0755, true);
             if ($result === false) {
@@ -239,7 +233,11 @@ abstract class tool_pluginkenobi_generator_base {
         $required = $this->validate_options($options, $expected, true);
         if (!empty($required)) {
             foreach ($required as $option => $value) {
-                $this->recipe[$option] = $value;
+                if ($feature === 'core') {
+                    $this->recipe[$option] = $value;
+                } else {
+                    $this->recipe['features'][$feature][$option] = $value;
+                }
             }
         }
 
@@ -247,7 +245,11 @@ abstract class tool_pluginkenobi_generator_base {
         $optional = $this->validate_options($options, $expected);
         if (!empty($optional)) {
             foreach ($optional as $option => $value) {
-                $this->recipe[$option] = $value;
+                if ($feature === 'core') {
+                    $this->recipe[$option] = $value;
+                } else {
+                    $this->recipe['features'][$feature][$option] = $value;
+                }
             }
         }
     }
@@ -275,7 +277,7 @@ abstract class tool_pluginkenobi_generator_base {
      * @return string[] The validated options.
      */
     protected function validate_options($options, $expected, $mustexist = false) {
-        // If the options from the recipe are a value, then return an empty array of options.
+        // If the feature value is a boolean, then return an empty array of options.
         // This happens when the feature has no options associated with it.
         if (!is_array($options)) {
             return array();
@@ -295,7 +297,7 @@ abstract class tool_pluginkenobi_generator_base {
 
         return $validated;
     }
-    
+
     /**
      * Checks if a given option is valid.
      *

@@ -36,7 +36,7 @@ require_once(__DIR__ . '/processor.php');
  * @copyright  2016 Alexandru Elisei
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class tool_pluginkenobi_capabilities_generator extends tool_pluginkenobi_generator_base {
+class tool_pluginkenobi_capabilities_generator extends tool_pluginkenobi_helper_generator_base {
     /** @var string[] The plugin features. */
     protected $features = array(
         'core'  => array(
@@ -60,27 +60,8 @@ class tool_pluginkenobi_capabilities_generator extends tool_pluginkenobi_generat
     /** @var string[] List of possible permission for an archetype. */
     protected $permissions = array('CAP_ALLOW', 'CAP_PREVENT');
 
-    /**
-     * Sets the value for the target directory based on the argument passed to the constructor.
-     *
-     * @param string $targetdir The supplied target directory.
-     * @return string The target directory.
-     */
-    protected function set_target_directory($targetdir) {
-        $this->targetdir = $targetdir;
-    }
-
-    /**
-     * Returns an array of features requested in the recipe.
-     *
-     * Helper generators only have the 'core' feature.
-     *
-     * @param string[] $recipe The recipe.
-     * @return string[] The requested features.
-     */
-    protected function get_requested_features($recipe) {
-        return array('core');
-    }
+    /** @var string Feature implemented by the generator. */
+    protected $implementedfeature = 'capabilities';
 
     /**
      * Extracts and validates the options needed for the core feature.
@@ -108,16 +89,6 @@ class tool_pluginkenobi_capabilities_generator extends tool_pluginkenobi_generat
                 $this->recipe['features']['capabilities'][$key][$option] = $value;
             }
         }
-    }
-
-    /**
-     * Returns the capabilities specified in the recipe.
-     *
-     * @param string $feature
-     * @param string[] $recipe
-     */
-    protected function get_feature_options($feature, $recipe) {
-        return $recipe['features']['capabilities'];
     }
 
     /**

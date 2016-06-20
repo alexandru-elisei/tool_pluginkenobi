@@ -36,7 +36,7 @@ require_once(__DIR__ . '/processor.php');
  * @copyright  2016 Alexandru Elisei
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class tool_pluginkenobi_events_generator extends tool_pluginkenobi_generator_base {
+class tool_pluginkenobi_events_generator extends tool_pluginkenobi_helper_generator_base {
     /** @var string[] The plugin features. */
     protected $features = array(
         'core'  => array(
@@ -48,51 +48,35 @@ class tool_pluginkenobi_events_generator extends tool_pluginkenobi_generator_bas
     /** @var string The default base class for an event. */
     protected $defaultbaseclass = '\core\event\base';
 
+    /** @var string Feature implemented by the generator. */
+    protected $implementedfeature = 'events';
+
     /**
-     * Extracts and validates the options needed for the feature.
+     * Extracts and validates the options needed for the core feature.
      *
      * @throws moodle_exception
      * @param string $feature The feature name.
      * @param string[] $recipe The plugin recipe.
      */
     protected function process_feature_options($feature, $recipe) {
-        if ($feature === 'core') {
-            if (empty($recipe['features']['events']) || !is_array($recipe['features']['events'])) {
-                throw new moodle_exception('Missing or invalid feature "events"');
-            }
-
-            foreach ($recipe['features']['events'] as $key => $event) {
-                $event = $this->validate_event($event);
-                $this->recipe['features']['events'][$key] = $event;
-            }
-        } else {
-            parent::process_feature_options($feature, $recipe);
-        }
-    }
-
-    /**
-     * Validates the options for an event.
-     *
-     * @throws moodle_exception
-     * @param string[] $capability The event to be validated.
-     */
-    protected function validate_event($event) {
-        $ret = array();
-        foreach ($this->features['core']['requiredoptions'] as $option) {
-            if (empty($event[$option])) {
-                throw new moodle_exception('Missing required option "' . $option . '"');
-            }
-            $ret[$option] = $this->validate_value($option, $event[$option]);
+        if (empty($recipe['features']['events']) || !is_array($recipe['features']['events'])) {
+            throw new moodle_exception('Missing or invalid feature "events"');
         }
 
-        foreach($this->features['core']['optionaloptions'] as $option) {
-           if (!empty($event[$option])) {
-                $value = $this->validate_value($option, $event[$option]);
-                $ret[$option] = $value;
+        $options = $this->get_feature_options($feature, $recipe);
+        foreach ($options as $key => $event) {
+            $expected = $this->features['core']['requiredoptions'];
+            $required = $this->validate_options($event, $expected, true);
+            foreach ($required as $option => $value) {
+                $this->recipe['features']['events'][$key][$option] = $value;
+            }
+
+            $expected = $this->features['core']['optionaloptions'];
+            $optional = $this->validate_options($event, $expected);
+            foreach ($optional as $option => $value) {
+                $this->recipe['features']['events'][$key][$option] = $value;
             }
         }
-
-        return $ret;
     }
 
     /**
@@ -121,12 +105,12 @@ class tool_pluginkenobi_events_generator extends tool_pluginkenobi_generator_bas
     protected function execute_additional_steps($recipe) {
         foreach ($this->recipe['features']['events'] as $event) {
             $filerecipe = $this->recipe;
-            unset($filerecipe['features']);
+            $filerecipe['features'] = array();
 
             $eventname = $event['eventname'];
-            $filerecipe['eventname'] = $eventname;
+            $filerecipe['features']['events']['eventname'] = $eventname;
             $extends = empty($event['extends']) ? $this->defaultbaseclass : $event['extends'];
-            $filerecipe['extends'] = $extends;
+            $filerecipe['features']['events']['extends'] = $extends;
 
             $outputfile = 'classes/event/' . $eventname . '.php';
             $this->outputfiles[$outputfile] = array(

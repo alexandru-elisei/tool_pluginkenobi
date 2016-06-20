@@ -83,7 +83,7 @@ abstract class tool_pluginkenobi_helper_generator_base extends tool_pluginkenobi
      */
     protected function get_feature_options($feature, $recipe) {
         if (empty($this->implementedfeature)) {
-            throw new coding_error('Class variable $implementedfeatures not defined for class ' . get_class($this));
+            throw new coding_error('Class variable $implementedfeature not defined for class ' . get_class($this));
         }
 
         return $recipe['features'][$this->implementedfeature];

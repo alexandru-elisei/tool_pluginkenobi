@@ -31,3 +31,8 @@ features:
           priority: 200
         - eventname: "\core\event\something_else_happened"
           callback: "\local_test\another_event_observer::something_else_happened"
+    events:
+        - eventname: "event_class"
+          extends: "\core\event\something_happened"
+        - eventname: "another_event_class"
+

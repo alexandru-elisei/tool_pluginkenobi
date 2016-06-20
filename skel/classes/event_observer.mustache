@@ -14,15 +14,15 @@ defined('MOODLE_INTERNAL') || die();
  * @copyright  {{year}} {{author.name}} {{author.email}}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class {{name}} {
+class {{features.observers.name}} {
 
     /**
-     * Triggered via {{eventclassname}} event.
+     * Triggered via {{features.observers.eventclassname}} event.
      *
-     * @param {{eventname}} $event The event.
+     * @param {{features.observers.eventname}} $event The event.
      * @return bool True on success.
      */
-    public static function {{function}}({{eventname}} $event) {
+    public static function {{features.observers.function}}({{features.observers.eventname}} $event) {
         // For more information about the Events API, please visit:
         // https://docs.moodle.org/dev/Event_2
         return true;

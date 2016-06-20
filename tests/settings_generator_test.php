@@ -45,6 +45,9 @@ class tool_pluginkenobi_settings_generator_testcase extends advanced_testcase {
             'name'  => 'Alexandru Elisei',
             'email' => 'alexandru.elisei@gmail.com'
         ),
+        'features'  => array(
+            'settings' => true
+        )
     );
 
     /** @var string Fixture locations. */
@@ -71,9 +74,6 @@ class tool_pluginkenobi_settings_generator_testcase extends advanced_testcase {
      */
     public function test_no_features() {
         $recipe = self::$baserecipe;
-        $recipe['features'] = array(
-            'all' => false
-        );
         $targetdir = make_request_directory();
 
         $generator = new tool_pluginkenobi_settings_generator($recipe, $targetdir);
