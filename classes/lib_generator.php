@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * File containing the local_generator class.
+ * File containing the lib_generator class.
  *
  * @package    tool_pluginkenobi
  * @copyright  2016 Alexandru Elisei
@@ -25,35 +25,44 @@
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->libdir . '/classes/component.php');
-require_once(__DIR__ . '/generator_base.php');
+require_once(__DIR__ . '/helper_generator_base.php');
 require_once(__DIR__ . '/processor.php');
 
 /**
- * Local_generator class.
+ * Lib_generator class.
  *
  * @package    tool_pluginkenobi
  * @copyright  2016 Alexandru Elisei
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class tool_pluginkenobi_local_generator extends tool_pluginkenobi_generator_base {
+class tool_pluginkenobi_lib_generator extends tool_pluginkenobi_helper_generator_base {
     /** @var $string[] List of features that the plugin has. */
     protected $features = array(
-        'core'      => array(
+        'core'  => array(
             'requiredoptions'   => array(),
             'optionaloptions'   => array(),
-            'files'             => array(),
-        ),
-
-        'settings'  => 'settings_generator',
-        'capabilities' => 'capabilities_generator',
-        'observers' => 'observers_generator',
-        'events' => 'events_generator',
-        'uninstall' => 'uninstall_generator',
-        'install' => 'install_generator',
-        'upgrade' => 'upgrade_generator',
-        'lib' => 'lib_generator'
+            'files'             => array(
+                'lib.php'  => array('template' => 'skel/lib')
+            )),
     );
 
-    /** @var string Default plugin location. */
-    protected $defaultlocation = '/local';
+    /** @var string What feature the helper generator is implementing. */
+    protected $implementedfeature = 'lib';
+
+    /**
+     * Adds the supported features in a template-friendly format.
+     *
+     * @param string[] $recipe The recipe.
+     */
+    protected function execute_additional_steps($recipe) {
+        if (!empty($recipe['features']['lib']['supports']) &&
+                is_array($recipe['features']['lib']['supports'])) {
+            $featurelist = array();
+            foreach ($recipe['features']['lib']['supports'] as $feature) {
+                $featurelist[] = array('name' => $feature);
+            }
+
+            $this->recipe['features']['lib']['supports']['featurelist'] = $featurelist;
+        }
+    }
 }

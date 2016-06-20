@@ -106,7 +106,6 @@ abstract class tool_pluginkenobi_helper_generator_base extends tool_pluginkenobi
      */
     protected function process_feature_options($feature, $recipe) {
         $options = $this->get_feature_options($feature, $recipe);
-
         $expected = $this->features[$feature]['requiredoptions'];
         $required = $this->validate_options($options, $expected, true);
         if (!empty($required)) {
