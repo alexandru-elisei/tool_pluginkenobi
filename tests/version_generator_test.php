@@ -95,7 +95,6 @@ class tool_pluginkenobi_version_generator_testcase extends advanced_testcase {
         $generator->generate_files();
 
         $versionfile = $targetdir . '/versiongeneratortest/version.php';
-        $this->assertFileExists($versionfile);
-        $this->assertFileEquals($versionfile, self::$fixtures . '/version_generator_test_options.php');
+        $this->assertFileEquals(self::$fixtures . '/version_generator_test_options.php', $versionfile);
     }
 }

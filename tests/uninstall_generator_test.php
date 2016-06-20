@@ -80,6 +80,6 @@ class tool_pluginkenobi_uninstall_generator_testcase extends advanced_testcase {
         $generator->generate_files();
 
         $uninstallfile = $targetdir . '/uninstallgeneratortest/db/uninstall.php';
-        $this->assertFileEquals($uninstallfile, self::$fixtures . '/db/uninstall.php');
+        $this->assertFileEquals(self::$fixtures . '/db/uninstall.php', $uninstallfile);
     }
 }

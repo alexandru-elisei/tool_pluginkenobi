@@ -94,10 +94,10 @@ class tool_pluginkenobi_local_generator_testcase extends advanced_testcase {
         $processor->generate();
 
         $versionfile = $targetdir . '/localgeneratortest/version.php';
-        $this->assertFileEquals($versionfile, self::$fixtures . '/version.php');
+        $this->assertFileEquals(self::$fixtures . '/version.php', $versionfile);
 
         $langfile = $targetdir . '/localgeneratortest/lang/en/local_localgeneratortest.php';
-        $this->assertFileEquals($langfile, self::$fixtures . '/lang/en/local_localgeneratortest.php');
+        $this->assertFileEquals(self::$fixtures . '/lang/en/local_localgeneratortest.php', $langfile);
     }
 
     /**
@@ -144,37 +144,37 @@ class tool_pluginkenobi_local_generator_testcase extends advanced_testcase {
         $processor->generate();
 
         $versionfile = $targetdir . '/localgeneratortest/version.php';
-        $this->assertFileEquals($versionfile, self::$fixtures . '/version.php');
+        $this->assertFileEquals(self::$fixtures . '/version.php', $versionfile);
 
         $langfile = $targetdir . '/localgeneratortest/lang/en/local_localgeneratortest.php';
-        $this->assertFileEquals($langfile, self::$fixtures . '/lang/en/local_localgeneratortest.php');
+        $this->assertFileEquals(self::$fixtures . '/lang/en/local_localgeneratortest.php', $langfile);
 
         $settingsfile = $targetdir . '/localgeneratortest/settings.php';
-        $this->assertFileEquals($settingsfile, self::$fixtures . '/settings.php');
+        $this->assertFileEquals(self::$fixtures . '/settings.php', $settingsfile);
 
         $dbaccessfile = $targetdir . '/localgeneratortest/db/access.php';
-        $this->assertFileEquals($dbaccessfile, self::$fixtures . '/db/access.php');
+        $this->assertFileEquals(self::$fixtures . '/db/access.php', $dbaccessfile);
 
         $eventsfile = $targetdir . '/localgeneratortest/db/events.php';
-        $this->assertFileEquals($eventsfile, self::$fixtures . '/db/events.php');
+        $this->assertFileEquals(self::$fixtures . '/db/events.php', $eventsfile);
 
         $observerclass = $targetdir . '/localgeneratortest/classes/event_observer.php';
-        $this->assertFileEquals($observerclass, self::$fixtures . '/classes/event_observer.php');
+        $this->assertFileEquals(self::$fixtures . '/classes/event_observer.php', $observerclass);
 
         $observerclass = $targetdir . '/localgeneratortest/classes/another_event_observer.php';
-        $this->assertFileEquals($observerclass, self::$fixtures . '/classes/another_event_observer.php');
+        $this->assertFileEquals(self::$fixtures . '/classes/another_event_observer.php', $observerclass);
 
         $eventclass = $targetdir . '/localgeneratortest/classes/event/event_class.php';
-        $this->assertFileEquals($eventclass, self::$fixtures . '/classes/event/event_class.php');
+        $this->assertFileEquals(self::$fixtures . '/classes/event/event_class.php', $eventclass);
 
         $eventclass = $targetdir . '/localgeneratortest/classes/event/another_event_class.php';
-        $this->assertFileEquals($eventclass, self::$fixtures . '/classes/event/another_event_class.php');
+        $this->assertFileEquals(self::$fixtures . '/classes/event/another_event_class.php', $eventclass);
 
         $uninstallfile = $targetdir . '/localgeneratortest/db/uninstall.php';
-        $this->assertFileEquals($uninstallfile, self::$fixtures . '/db/uninstall.php');
+        $this->assertFileEquals(self::$fixtures . '/db/uninstall.php', $uninstallfile);
 
         $installfile = $targetdir . '/localgeneratortest/db/install.php';
-        $this->assertFileEquals($installfile, self::$fixtures . '/db/install.php');
+        $this->assertFileEquals(self::$fixtures . '/db/install.php', $installfile);
 
         $upgradefile = $targetdir . '/localgeneratortest/db/upgrade.php';
         $this->assertFileEquals(self::$fixtures . '/db/upgrade.php', $upgradefile);

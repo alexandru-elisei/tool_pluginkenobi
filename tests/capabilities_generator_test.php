@@ -155,7 +155,7 @@ class tool_pluginkenobi_capabilities_generator_testcase extends advanced_testcas
         $generator = new tool_pluginkenobi_capabilities_generator($recipe, $targetdir);
         $generator->generate_files();
 
-        $dbaccessfile = $targetdir . '/capabilitiesgeneratortest/db/access.php';
-        $this->assertFileEquals($dbaccessfile, self::$fixtures . '/access.php');
+        $accessfile = $targetdir . '/capabilitiesgeneratortest/db/access.php';
+        $this->assertFileEquals(self::$fixtures . '/access.php', $accessfile);
     }
 }

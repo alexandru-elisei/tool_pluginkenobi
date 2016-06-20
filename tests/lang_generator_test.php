@@ -91,6 +91,6 @@ class tool_pluginkenobi_lang_generator_testcase extends advanced_testcase {
         $generator->generate_files();
 
         $langfile = $targetdir . '/langgeneratortest/lang/en/langgeneratortest.php';
-        $this->assertFileEquals($langfile, self::$fixtures . '/langgeneratortest_no_features.php');
+        $this->assertFileEquals(self::$fixtures . '/langgeneratortest_no_features.php', $langfile);
     }
 }

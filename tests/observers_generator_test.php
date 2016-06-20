@@ -140,12 +140,12 @@ class tool_pluginkenobi_observers_generator_testcase extends advanced_testcase {
         $generator->generate_files();
 
         $eventsfile = $targetdir . '/observersgeneratortest/db/events.php';
-        $this->assertFileEquals($eventsfile, self::$fixtures . '/db/events.php');
+        $this->assertFileEquals(self::$fixtures . '/db/events.php', $eventsfile);
 
         $observerclass = $targetdir . '/observersgeneratortest/classes/event_observer.php';
-        $this->assertFileEquals($observerclass, self::$fixtures . '/classes/event_observer.php');
+        $this->assertFileEquals(self::$fixtures . '/classes/event_observer.php', $observerclass);
 
         $observerclass = $targetdir . '/observersgeneratortest/classes/another_event_observer.php';
-        $this->assertFileEquals($observerclass, self::$fixtures . '/classes/another_event_observer.php');
+        $this->assertFileEquals(self::$fixtures . '/classes/another_event_observer.php', $observerclass);
     }
 }

@@ -80,6 +80,6 @@ class tool_pluginkenobi_settings_generator_testcase extends advanced_testcase {
         $generator->generate_files();
 
         $settingsfile = $targetdir . '/settingsgeneratortest/settings.php';
-        $this->assertFileEquals($settingsfile, self::$fixtures . '/settings_generator_test_no_features.php');
+        $this->assertFileEquals(self::$fixtures . '/settings_generator_test_no_features.php', $settingsfile);
     }
 }
