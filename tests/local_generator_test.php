@@ -101,12 +101,39 @@ class tool_pluginkenobi_local_generator_testcase extends advanced_testcase {
     }
 
     /**
-     * Tests generating a local plugin type with the 'settings' feature.
+     * Tests generating a local plugin type with the all the features.
      */
-    public function test_with_settings() {
+    public function test_with_all_features() {
         $recipe = self::$baserecipe;
         $recipe['features'] = array(
-            'settings' => true
+            'all' => true,
+            'capabilities' => array(
+                array(
+                    'name' => 'view',
+                    'captype' => 'read',
+                    'contextlevel' => 'CONTEXT_MODULE',
+                    'archetypes' => array(
+                        array('role' => 'student', 'permission' => 'CAP_ALLOW'),
+                        array('role' => 'editingteacher', 'permission' => 'CAP_ALLOW'))
+                )),
+            'observers' => array(
+                array(
+                    'eventname' => '\core\event\something_happened',
+                    'callback'  => '\local_localgeneratortest\event_observer::something_happened',
+                    'priority'  => 200,
+                ),
+                array(
+                    'eventname' => '\core\event\something_else_happened',
+                    'callback'  => '\local_localgeneratortest\another_event_observer::something_else_happened',
+                )),
+            'events' => array(
+                array(
+                    'eventname' => 'event_class',
+                    'extends'  => '\core\event\something_happened'
+                ),
+                array(
+                    'eventname' => 'another_event_class'
+                )),
         );
         $targetdir = make_request_directory();
 
@@ -121,65 +148,9 @@ class tool_pluginkenobi_local_generator_testcase extends advanced_testcase {
 
         $settingsfile = $targetdir . '/localgeneratortest/settings.php';
         $this->assertFileEquals($settingsfile, self::$fixtures . '/settings.php');
-    }
-
-    /**
-     * Tests generating a local plugin type with the 'access' feature.
-     */
-    public function test_with_access() {
-        $recipe = self::$baserecipe;
-        $recipe['features'] = array(
-            'capabilities' => array(
-                array(
-                    'name' => 'view',
-                    'captype' => 'read',
-                    'contextlevel' => 'CONTEXT_MODULE',
-                    'archetypes' => array(
-                        array('role' => 'student', 'permission' => 'CAP_ALLOW'),
-                        array('role' => 'editingteacher', 'permission' => 'CAP_ALLOW'))
-                    )
-                ));
-        $targetdir = make_request_directory();
-
-        $processor = new tool_pluginkenobi_processor($recipe, $targetdir);
-        $processor->generate();
-
-        $versionfile = $targetdir . '/localgeneratortest/version.php';
-        $this->assertFileEquals($versionfile, self::$fixtures . '/version.php');
-
-        $langfile = $targetdir . '/localgeneratortest/lang/en/local_localgeneratortest.php';
-        $this->assertFileEquals($langfile, self::$fixtures . '/lang/en/local_localgeneratortest.php');
 
         $dbaccessfile = $targetdir . '/localgeneratortest/db/access.php';
         $this->assertFileEquals($dbaccessfile, self::$fixtures . '/db/access.php');
-    }
-
-    /**
-     * Tests generating a local plugin type with the 'observers' feature.
-     */
-    public function test_with_observers() {
-        $recipe = self::$baserecipe;
-        $recipe['features'] = array(
-            'observers' => array(
-                array(
-                    'eventname' => '\core\event\something_happened',
-                    'callback'  => '\local_localgeneratortest\event_observer::something_happened',
-                    'priority'  => 200,
-                ),
-                array(
-                    'eventname' => '\core\event\something_else_happened',
-                    'callback'  => '\local_localgeneratortest\another_event_observer::something_else_happened',
-            )));
-        $targetdir = make_request_directory();
-
-        $processor = new tool_pluginkenobi_processor($recipe, $targetdir);
-        $processor->generate();
-
-        $versionfile = $targetdir . '/localgeneratortest/version.php';
-        $this->assertFileEquals($versionfile, self::$fixtures . '/version.php');
-
-        $langfile = $targetdir . '/localgeneratortest/lang/en/local_localgeneratortest.php';
-        $this->assertFileEquals($langfile, self::$fixtures . '/lang/en/local_localgeneratortest.php');
 
         $eventsfile = $targetdir . '/localgeneratortest/db/events.php';
         $this->assertFileEquals($eventsfile, self::$fixtures . '/db/events.php');
@@ -189,78 +160,15 @@ class tool_pluginkenobi_local_generator_testcase extends advanced_testcase {
 
         $observerclass = $targetdir . '/localgeneratortest/classes/another_event_observer.php';
         $this->assertFileEquals($observerclass, self::$fixtures . '/classes/another_event_observer.php');
-    }
-
-    /**
-     * Tests generating a local plugin type with the 'events' feature.
-     */
-    public function test_with_events() {
-        $recipe = self::$baserecipe;
-        $recipe['features'] = array(
-            'events' => array(
-                array(
-                    'eventname' => 'event_class',
-                    'extends'  => '\core\event\something_happened'
-                ),
-                array(
-                    'eventname' => 'another_event_class'
-                )
-            ));
-        $targetdir = make_request_directory();
-
-        $processor = new tool_pluginkenobi_processor($recipe, $targetdir);
-        $processor->generate();
-
-        $versionfile = $targetdir . '/localgeneratortest/version.php';
-        $this->assertFileEquals($versionfile, self::$fixtures . '/version.php');
-
-        $langfile = $targetdir . '/localgeneratortest/lang/en/local_localgeneratortest.php';
-        $this->assertFileEquals($langfile, self::$fixtures . '/lang/en/local_localgeneratortest.php');
 
         $eventclass = $targetdir . '/localgeneratortest/classes/event/event_class.php';
         $this->assertFileEquals($eventclass, self::$fixtures . '/classes/event/event_class.php');
 
         $eventclass = $targetdir . '/localgeneratortest/classes/event/another_event_class.php';
         $this->assertFileEquals($eventclass, self::$fixtures . '/classes/event/another_event_class.php');
-    }
-
-    /**
-     * Tests generating a local plugin with the 'uninstall' feature.
-     */
-    public function test_with_uninstall() {
-        $recipe = self::$baserecipe;
-        $recipe['features'] = array('uninstall' => true);
-        $targetdir = make_request_directory();
-
-        $processor = new tool_pluginkenobi_processor($recipe, $targetdir);
-        $processor->generate();
-
-        $versionfile = $targetdir . '/localgeneratortest/version.php';
-        $this->assertFileEquals($versionfile, self::$fixtures . '/version.php');
-
-        $langfile = $targetdir . '/localgeneratortest/lang/en/local_localgeneratortest.php';
-        $this->assertFileEquals($langfile, self::$fixtures . '/lang/en/local_localgeneratortest.php');
 
         $uninstallfile = $targetdir . '/localgeneratortest/db/uninstall.php';
         $this->assertFileEquals($uninstallfile, self::$fixtures . '/db/uninstall.php');
-    }
-
-    /**
-     * Tests generating a local plugin with the 'install' feature.
-     */
-    public function test_with_install() {
-        $recipe = self::$baserecipe;
-        $recipe['features'] = array('install' => true);
-        $targetdir = make_request_directory();
-
-        $processor = new tool_pluginkenobi_processor($recipe, $targetdir);
-        $processor->generate();
-
-        $versionfile = $targetdir . '/localgeneratortest/version.php';
-        $this->assertFileEquals($versionfile, self::$fixtures . '/version.php');
-
-        $langfile = $targetdir . '/localgeneratortest/lang/en/local_localgeneratortest.php';
-        $this->assertFileEquals($langfile, self::$fixtures . '/lang/en/local_localgeneratortest.php');
 
         $installfile = $targetdir . '/localgeneratortest/db/install.php';
         $this->assertFileEquals($installfile, self::$fixtures . '/db/install.php');
