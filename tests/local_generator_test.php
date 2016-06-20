@@ -134,6 +134,9 @@ class tool_pluginkenobi_local_generator_testcase extends advanced_testcase {
                 array(
                     'eventname' => 'another_event_class'
                 )),
+            'upgrade' => array(
+                'upgradelib' => true
+            ),
         );
         $targetdir = make_request_directory();
 
@@ -172,5 +175,11 @@ class tool_pluginkenobi_local_generator_testcase extends advanced_testcase {
 
         $installfile = $targetdir . '/localgeneratortest/db/install.php';
         $this->assertFileEquals($installfile, self::$fixtures . '/db/install.php');
+
+        $upgradefile = $targetdir . '/localgeneratortest/db/upgrade.php';
+        $this->assertFileEquals(self::$fixtures . '/db/upgrade.php', $upgradefile);
+
+        $upgradelibfile = $targetdir . '/localgeneratortest/db/upgradelib.php';
+        $this->assertFileEquals(self::$fixtures . '/db/upgradelib.php', $upgradelibfile);
     }
 }
